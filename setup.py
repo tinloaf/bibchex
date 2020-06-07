@@ -19,7 +19,7 @@ setup(
     author_email="pypi@mbox.tinloaf.de",
     description="Check your BibTeX files for consistency and sanity!",
     keywords="bibtex latex bibliography",
-    url="http://github.com/tinloa/bibchex/",   # project home page, if any
+    url="http://github.com/tinloaf/bibchex/",   # project home page, if any
     project_urls={
         "Bug Tracker": "https://github.com/tinloaf/bibchex/issues",
         "Documentation": "https://tinloaf.github.io/bibchex/",
