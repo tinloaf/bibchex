@@ -1,0 +1,306 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>List of Checkers &#8212; BibCheX 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/cloud.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Available Data Sources" href="sources.html" />
+    <link rel="prev" title="BibCheX Configuration" href="config.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="sources.html" title="Available Data Sources"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="config.html" title="BibCheX Configuration"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">BibCheX 0.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="list-of-checkers">
+<h1>List of Checkers<a class="headerlink" href="#list-of-checkers" title="Permalink to this headline">¶</a></h1>
+<p id="file-checkers">This page lists all available checkers, i.e., checks that are run against your BibTeX file without pulling any data from data sources.</p>
+<p>Note that each checker can be disabled by setting the option <cite>check_&lt;checker name&gt;</cite> to <cite>false</cite> in the <a class="reference internal" href="config.html#file-config"><span class="std std-ref">configuration</span></a>.</p>
+<div class="section" id="basic-checks">
+<h2>Basic Checks<a class="headerlink" href="#basic-checks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="doi-checker">
+<h3>DOI Checker<a class="headerlink" href="#doi-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>doi</cite></p>
+<p>Checks that every entry has a DOI.</p>
+</div>
+<div class="section" id="doi-url-checker">
+<h3>DOI URL Checker<a class="headerlink" href="#doi-url-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>doi_url</cite></p>
+<p>Checks that URLs supplied in the <cite>url</cite> field do not point to <cite>doi.org</cite> - use the <cite>doi</cite> field for this instead.</p>
+</div>
+<div class="section" id="dead-url-checker">
+<h3>Dead URL Checker<a class="headerlink" href="#dead-url-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>dead_url</cite></p>
+<p>Checks that URLs supplied in the <cite>url</cite> field can be accessed.</p>
+</div>
+<div class="section" id="required-fields-checker">
+<h3>Required Fields Checker<a class="headerlink" href="#required-fields-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>required_fields</cite></p>
+<p>Check that all required fields (configured via the config option <cite>required</cite>) are present.</p>
+</div>
+<div class="section" id="forbidden-fields-checker">
+<h3>Forbidden Fields Checker<a class="headerlink" href="#forbidden-fields-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>forbidden_fields</cite></p>
+<p>Check that no forbidden fields (configured via the config option <cite>forbidden</cite>) are present.</p>
+</div>
+</div>
+<div class="section" id="author-checks">
+<h2>Author Checks<a class="headerlink" href="#author-checks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="initial-dotted-check">
+<h3>Initial Dotted Check<a class="headerlink" href="#initial-dotted-check" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>author_initial_dotted</cite></p>
+<p>Checks if author initials are dotted. The ‘dotted’ form would be <cite>John R. Doe</cite>, the ‘undotted’ form would be <cite>John R Doe</cite>.</p>
+<p><strong>Options:</strong></p>
+<dl class="simple">
+<dt>author_initial_want_dotted</dt><dd><p>Set to <cite>true</cite> if you want the dotted form, to <cite>false</cite> if you want the undotted form.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="allcaps-name-checker">
+<h3>Allcaps Name Checker<a class="headerlink" href="#allcaps-name-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>author_names_allcaps</cite></p>
+<p>Checks that author names are not in all caps.</p>
+</div>
+<div class="section" id="first-name-initial-checker">
+<h3>First Name Initial Checker<a class="headerlink" href="#first-name-initial-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>author_names_firstinitial</cite></p>
+<p>Checks that the first name of every author is not initialled. I.e., <cite>John Doe</cite> would be fine, <cite>J Doe</cite> or <cite>J. Doe</cite> would not.</p>
+</div>
+<div class="section" id="middle-name-initial-checker">
+<h3>Middle Name Initial Checker<a class="headerlink" href="#middle-name-initial-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>author_names_middleinitial</cite></p>
+<p>Checks that the middle names of every author are not initialled. I.e., <cite>John Random Doe</cite> would be fine, <cite>John R Doe</cite> or <cite>John R. Doe</cite> would not.</p>
+</div>
+<div class="section" id="last-name-initial-checker">
+<h3>Last Name Initial Checker<a class="headerlink" href="#last-name-initial-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>author_names_lastinitial</cite></p>
+<p>Checks that the last name of every author is not initialled. I.e., <cite>John Doe</cite> would be fine, <cite>John D.</cite> or <cite>John D</cite> would not.</p>
+</div>
+</div>
+<div class="section" id="isbn-checks">
+<h2>ISBN Checks<a class="headerlink" href="#isbn-checks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="valid-isbn-checker">
+<h3>Valid ISBN Checker<a class="headerlink" href="#valid-isbn-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>isbn_valid</cite></p>
+<p>Checks that a supplied ISBN is in fact a valid ISBN.</p>
+</div>
+<div class="section" id="isbn-format-checker">
+<h3>ISBN Format Checker<a class="headerlink" href="#isbn-format-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>isbn_format</cite></p>
+<p>Checks that all ISBNs are in the requested ISBN format.</p>
+<p><strong>Options</strong>:</p>
+<dl class="simple">
+<dt>isbn_format</dt><dd><p>Set to either <cite>“canonical”</cite> or <cite>“masked”</cite>. This specifies the requested ISBN format.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="isbn-length-checker">
+<h3>ISBN Length Checker<a class="headerlink" href="#isbn-length-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>isbn_length</cite></p>
+<p>Checks that all ISBNs have the correct (requested) length.</p>
+<p><strong>Options</strong>:</p>
+<dl class="simple">
+<dt>isbn_length</dt><dd><p>Set to either <cite>10</cite> or <cite>13</cite> (the number, not a string thereof) for the requested ISBN length</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="publication-checks">
+<h2>Publication Checks<a class="headerlink" href="#publication-checks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="journal-abbrev-checker">
+<h3>Journal Abbrev Checker<a class="headerlink" href="#journal-abbrev-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>journal_abbrev</cite></p>
+<p>Checks that journal names (in the fields <cite>booktitle</cite> and <cite>journal</cite>) do not contain abbreviations.</p>
+</div>
+<div class="section" id="journal-similarity-checker">
+<h3>Journal Similarity Checker<a class="headerlink" href="#journal-similarity-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>journal_similarity</cite></p>
+<p>Checks whether two journals (fields <cite>booktitle</cite> and <cite>journal</cite>) have very similar names and might actually mean the same journal in two different forms.</p>
+</div>
+<div class="section" id="publisher-similarity-check">
+<h3>Publisher Similarity Check<a class="headerlink" href="#publisher-similarity-check" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>publisher_similarity</cite></p>
+<p>Checks whether two publishers (fields <cite>organization</cite> and <cite>publisher</cite>) have very similar names and might actually mean the same publisher in two different forms.</p>
+</div>
+<div class="section" id="journal-mutual-abbreviation-checker">
+<h3>Journal Mutual Abbreviation Checker<a class="headerlink" href="#journal-mutual-abbreviation-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>journal_mutual_abbrev</cite></p>
+<p>Checks whether two journals (fields <cite>booktitle</cite> and <cite>journal</cite>) could be abbreviations of each other.</p>
+</div>
+<div class="section" id="publisher-mutual-abbreviation-check">
+<h3>Publisher Mutual Abbreviation Check<a class="headerlink" href="#publisher-mutual-abbreviation-check" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>publisher_mutual_abbrev</cite></p>
+<p>Checks whether two publishers (fields <cite>organization</cite> and <cite>publisher</cite>) could be abbreviations of each other.</p>
+</div>
+<div class="section" id="prefer-organization-checker">
+<h3>Prefer Organization Checker<a class="headerlink" href="#prefer-organization-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>prefer_organization</cite></p>
+<p>Checks whether the <cite>publisher</cite> field is set, but the <cite>organization</cite> field is not.</p>
+</div>
+<div class="section" id="prefer-date-checker">
+<h3>Prefer Date Checker<a class="headerlink" href="#prefer-date-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>prefer_date</cite></p>
+<p>Checks whether the <cite>year</cite>, <cite>month</cite> and / or <cite>day</cite> fields are set, but the <cite>date</cite> field is not.</p>
+<p><strong>Options</strong>:</p>
+<dl class="simple">
+<dt>prefer_date_or_year</dt><dd><p>Do not emit an error if just <cite>year</cite>, but not <cite>date</cite>, <cite>month</cite> and <cite>day</cite> are set.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="date-parseable-checker">
+<h3>Date Parseable Checker<a class="headerlink" href="#date-parseable-checker" title="Permalink to this headline">¶</a></h3>
+<p><strong>Name</strong>: <cite>date_parseable</cite></p>
+<p>Checks if a date supplied via the <cite>date</cite> field is in a parseable form, i.e., a valid date.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="config.html">BibCheX Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">List of Checkers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-checks">Basic Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#author-checks">Author Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isbn-checks">ISBN Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#publication-checks">Publication Checks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sources.html">Available Data Sources</a></li>
+</ul>
+</div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="config.html"
+                          title="Previous page">&larr; BibCheX Configuration</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="sources.html"
+                          title="Next page">&rarr; Available Data Sources</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/checkers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="sources.html" title="Available Data Sources"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="config.html" title="BibCheX Configuration"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">BibCheX 0.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Lukas Barth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.4.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

@@ -1,0 +1,191 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Available Data Sources &#8212; BibCheX 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/cloud.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="List of Checkers" href="checkers.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="checkers.html" title="List of Checkers"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">BibCheX 0.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="available-data-sources">
+<h1>Available Data Sources<a class="headerlink" href="#available-data-sources" title="Permalink to this headline">¶</a></h1>
+<p id="file-sources">Data sources are services that are used to pull in meta data for your references. The meta data in your BibTeX file is then compared to the pulled data and differences are highlighted. This page lists the used sources together with their quirks and options, if any.</p>
+<div class="section" id="crossref">
+<h2>CrossRef<a class="headerlink" href="#crossref" title="Permalink to this headline">¶</a></h2>
+<p>The Crossref source pulls data from crossref.org, the largest DOI registry. Most publications that have a DOI should have their meta data registered at crossref. To also be able to find publications for which you do not have set a DOI in your BibTeX file, we perform a <a class="reference internal" href="#reverse-doi"><span class="std std-ref">reverse DOI search</span></a> first for any publication without a known DOI.</p>
+<p><strong>Options</strong>:</p>
+<dl class="simple">
+<dt>crossref_plus</dt><dd><p>If you are a subscriber to “Crossref Plus”, set this option to your token to use the “premium” API instead of the free one. The retrieved data should be the same as for the free API, but you might see improved performance.</p>
+</dd>
+<dt>crossref_mailto</dt><dd><p>If you use the free API, Crossref mandates submitting a valid email address with each request to contact you in case of problems. <strong>Please set this option to an email address that you can receive.</strong></p>
+</dd>
+<dt>doi_fuzzy_threshold</dt><dd><p>A number between 0 and 100 (in percent). This defines how large the fuzzy similarity between the title in your BibTeX file and the title of a publication retrieved via <a class="reference internal" href="#reverse-doi"><span class="std std-ref">reverse DOI search</span></a> must be for the DOI to be considered.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="datacite">
+<h2>DataCite<a class="headerlink" href="#datacite" title="Permalink to this headline">¶</a></h2>
+<p>DataCite is a DOI registry mainly intended for research data publications. Meta data for publications registrered with DataCite is pulled via their API.</p>
+</div>
+<div class="section" id="isbn">
+<h2>ISBN<a class="headerlink" href="#isbn" title="Permalink to this headline">¶</a></h2>
+<p>The ISBN data source uses one of several ISBN-to-meta-data providers (at the moment: Google Books and openlibrary.org by the Internet Archive) to retrieve meta data for any publication that has an ISBN. Currently, there is no reverse ISBN search, so you must set the ISBN manually for all your publications having an ISBN.</p>
+</div>
+<div class="section" id="meta">
+<h2>Meta<a class="headerlink" href="#meta" title="Permalink to this headline">¶</a></h2>
+<p>The Meta data source retrieves the website pointed to by a BibTeX entry’s URL (or the DOI, if no URL is given). Most of the time, this URL leads to a publisher’s page about the relevant publication. Many of these publisher pages contain embedded meta data in a machine-readable form. If this is the case, this meta data is retrieved.</p>
+</div>
+<div class="section" id="reverse-doi-search">
+<span id="reverse-doi"></span><h2>Reverse DOI Search<a class="headerlink" href="#reverse-doi-search" title="Permalink to this headline">¶</a></h2>
+<p>Currently, only the Crossref source supports <cite>reverse DOI search</cite>. For all your BibTeX item which
+have no DOI set (and which can consequently not be looked up by Crossref and DataCite), this will
+try to automatically determine a DOI by searching for the title and authors on Crossref. If a
+publication is returned the title of which matches your set title to at least
+<code class="docutils literal notranslate"><span class="pre">doi_fuzzy_threshold</span></code> percent (using a fuzzy match), the retrieved DOI will be assumed to belong
+to the respective entry.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="config.html">BibCheX Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.html">List of Checkers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Available Data Sources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#crossref">CrossRef</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#datacite">DataCite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isbn">ISBN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#meta">Meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reverse-doi-search">Reverse DOI Search</a></li>
+</ul>
+</li>
+</ul>
+</div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="checkers.html"
+                          title="Previous page">&larr; List of Checkers</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/sources.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="checkers.html" title="List of Checkers"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">BibCheX 0.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Lukas Barth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.4.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

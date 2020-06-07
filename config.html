@@ -1,0 +1,284 @@
+
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>BibCheX Configuration &#8212; BibCheX 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/cloud.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noticia+Text:400,i,b,bi|Open+Sans:400,i,b,bi|Roboto+Mono:400,i,b,bi&amp;display=swap" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+
+    
+    
+     
+        <script src="_static/jquery.cookie.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.base.js"></script>
+    
+
+    
+     
+        <script src="_static/cloud.js"></script>
+    
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="List of Checkers" href="checkers.html" />
+    <link rel="prev" title="Welcome to BibCheX’s documentation!" href="index.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="checkers.html" title="List of Checkers"
+             accesskey="N">next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to BibCheX’s documentation!"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">BibCheX 0.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bibchex-configuration">
+<h1>BibCheX Configuration<a class="headerlink" href="#bibchex-configuration" title="Permalink to this headline">¶</a></h1>
+<p id="file-config">This page explains all possible options that can be specified in the config JSON file.</p>
+<p>Configuration is possible at multiple levels. The config JSON file must contain an object at its top
+level. In this object, all configuration options can be set. Additionally, the top object can have a
+key <code class="docutils literal notranslate"><span class="pre">sub</span></code>, which can contain a list of JSON objects. Each object contains option overrides for
+specific cases, e.g. specific BibTeX item types. See <a class="reference internal" href="#sub-config"><span class="std std-ref">config overrides</span></a> and
+<a class="reference internal" href="#item-config"><span class="std std-ref">per-item configuration</span></a> for details.</p>
+<div class="section" id="main-configuration-options">
+<h2>Main Configuration Options<a class="headerlink" href="#main-configuration-options" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>required</dt><dd><dl class="simple">
+<dt>List of fields that must be present in every item</dt><dd><p><strong>Type</strong>: list of string</p>
+</dd>
+</dl>
+</dd>
+<dt>forbidden</dt><dd><dl class="simple">
+<dt>List of fields that must never be present</dt><dd><p><strong>Type</strong>: list of string</p>
+</dd>
+</dl>
+</dd>
+<dt>wanted</dt><dd><p>List of fields the value of which interests us. All other fields will not be checked against the data returned by data sources.</p>
+</dd>
+<dt>dot_initials</dt><dd><dl class="simple">
+<dt>Whether authors’ initials should be dotted, i.e., ‘John R. Doe’ instead of ‘John R Doe’</dt><dd><p><strong>Type</strong>: boolean</p>
+</dd>
+</dl>
+</dd>
+<dt>authors_ignore_allcaps</dt><dd><dl class="simple">
+<dt>Whether to ignore author name capitalization for data sources that return names in all caps.</dt><dd><p><strong>Type</strong>: boolean</p>
+</dd>
+</dl>
+</dd>
+<dt>title_ignore_allcaps</dt><dd><dl class="simple">
+<dt>Whether to ignore title capitalization for data sources that return names in all caps</dt><dd><p><strong>Type</strong>: boolean</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="section" id="individual-checkers">
+<h2>Individual checkers<a class="headerlink" href="#individual-checkers" title="Permalink to this headline">¶</a></h2>
+<p>All checks (i.e., tests that do not compare to data fetched from some source) can be enabled or
+disabled. Each checker has a name; refer to the <a class="reference internal" href="checkers.html#file-checkers"><span class="std std-ref">list of checkers</span></a> for the
+names of the checkers. Additionally, the output will tell you the names of the checkers that have
+detected problems. Each such checker can be enabled/disabled by setting the option
+<code class="docutils literal notranslate"><span class="pre">check_&lt;checker_name&gt;</span></code>. For example, setting <code class="docutils literal notranslate"><span class="pre">check_journal_abbrev</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code> will disable
+the check for abbreviated journal names.</p>
+<p>By default, all checkers are enabled. Some checkers take additional options. These are listed on the
+<a class="reference internal" href="checkers.html#file-checkers"><span class="std std-ref">list of checkers</span></a>.</p>
+</div>
+<div class="section" id="data-sources">
+<h2>Data sources<a class="headerlink" href="#data-sources" title="Permalink to this headline">¶</a></h2>
+<p>Some of the data sources take additional options. These are:</p>
+<dl class="simple">
+<dt>crossref_plus</dt><dd><dl class="simple">
+<dt>Your crossref plus credentials, in case you have them. If you don’t set this option, the free version will be used.</dt><dd><p><strong>Type</strong>: string</p>
+</dd>
+</dl>
+</dd>
+<dt>crossref_mailto</dt><dd><dl class="simple">
+<dt>If you use the free Crossref API access, please provide a valid email address here.</dt><dd><p><strong>Type</strong>: string</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="section" id="config-overrides">
+<span id="sub-config"></span><h2>Config Overrides<a class="headerlink" href="#config-overrides" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>sub</cite> key in the main config object can contain overrides for all config options. The <cite>sub</cite> key expects a list of objects. Each object must contain the keys <cite>select_field</cite> and <cite>select_re</cite>, where <cite>select_field</cite> expects the name of a BibTeX field, and <cite>select_re</cite> expects a regular expression. For each entry in your BibTeX file, if the specified field matches the specified regular expression, the specified overrides will be applied. There always is a field named <cite>entrytype</cite> that contains the type of the BibTeX entry.</p>
+<p>In the following example, the required fields (option <cite>required</cite>) are configured to be <cite>author</cite> and <cite>title</cite>. For entries of type <cite>article</cite>, we also want the <cite>journal</cite> to be specified:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span> <span class="p p-Indicator">{</span>
+                <span class="s">&quot;required&quot;</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;author&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;title&quot;</span><span class="p p-Indicator">],</span>
+
+                <span class="s">&quot;sub&quot;</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span>
+                                <span class="p p-Indicator">{</span>
+                                                <span class="s">&quot;select_field&quot;</span><span class="p p-Indicator">:</span> <span class="s">&quot;entrytype&quot;</span><span class="p p-Indicator">,</span>
+                                                <span class="s">&quot;select_re&quot;</span><span class="p p-Indicator">:</span> <span class="s">&quot;article&quot;</span><span class="p p-Indicator">,</span>
+                                                <span class="s">&quot;required&quot;</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;author&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;title&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;journal&quot;</span><span class="p p-Indicator">]</span>
+                                <span class="p p-Indicator">}</span>
+                <span class="p p-Indicator">]</span>
+<span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="per-item-configuration">
+<span id="item-config"></span><h2>Per-Item Configuration<a class="headerlink" href="#per-item-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Problems raised by <a class="reference internal" href="checkers.html#file-checkers"><span class="std std-ref">checkers</span></a> as well as differences to the data pulled in by <a class="reference internal" href="sources.html#file-sources"><span class="std std-ref">data sources</span></a> can be ignored on a per-item basis.</p>
+<p>To ignore a problem raised by a checker, find the name of the checker. The output HTML file tells you the name of the checker for each problem. Then, in your BibTeX file, add to the item in question a field <code class="docutils literal notranslate"><span class="pre">bibchex-ignore-problems</span></code>. The data of that field is a semicolon-separated list of checker names to ignore.</p>
+<p>As an example, an item for which problems raised by the <code class="docutils literal notranslate"><span class="pre">dead_url</span></code> and <code class="docutils literal notranslate"><span class="pre">isbn_length</span></code> checkers should be ignored could look like this:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span>@article {myarticle
+         title={Foo},
+         authors={John Doe},
+         doi={01234},
+         bibchex-ignore-problems={dead_url;isbn_length}
+}
+</pre></div>
+</div>
+<p>To ignore differences to data pulled from some data source, add a field <code class="docutils literal notranslate"><span class="pre">bibchex-ignore-diffs</span></code>. The data of that field is a semicolon-separated list of tokens of the form <code class="docutils literal notranslate"><span class="pre">&lt;data</span> <span class="pre">source&gt;.&lt;field&gt;</span></code>. This specifies that the data for <code class="docutils literal notranslate"><span class="pre">&lt;field&gt;</span></code> pulled from the data source <code class="docutils literal notranslate"><span class="pre">&lt;data</span> <span class="pre">source&gt;</span></code> should be ignored when computing differences. The <code class="docutils literal notranslate"><span class="pre">&lt;field&gt;</span></code> specifier can be set to <code class="docutils literal notranslate"><span class="pre">*</span></code> to ignore all data from the respective data source.</p>
+<p>As an example, an item for which no comparison to the data from crossref should take place could look like this:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span>@article {myarticle
+         title={Foo},
+         authors={John Doe},
+         doi={01234},
+         bibchex-ignore-diffs={crossref.*}
+      }
+</pre></div>
+</div>
+<p>If you just want to ignore differences in the <code class="docutils literal notranslate"><span class="pre">date</span></code> field for data coming from crossref, you instead write:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span>@article {myarticle
+         title={Foo},
+         authors={John Doe},
+         doi={01234},
+         bibchex-ignore-diffs={crossref.date}
+}
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div class="sphinx-toc sphinxglobaltoc">
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BibCheX Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main-configuration-options">Main Configuration Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#individual-checkers">Individual checkers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-sources">Data sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#config-overrides">Config Overrides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#per-item-configuration">Per-Item Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="checkers.html">List of Checkers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sources.html">Available Data Sources</a></li>
+</ul>
+</div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="index.html"
+                          title="Previous page">&larr; Welcome to BibCheX’s documentation!</a></p>
+  </div>
+  <div class="sphinxnext">
+    <h4>Next page</h4>
+    <p class="topless"><a href="checkers.html"
+                          title="Next page">&rarr; List of Checkers</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/config.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="checkers.html" title="List of Checkers"
+             >next</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to BibCheX’s documentation!"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">BibCheX 0.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Lukas Barth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.4.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>
