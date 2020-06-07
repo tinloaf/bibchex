@@ -33,7 +33,7 @@ Configuration determines which style rules should be checked for. BibCheX comes 
 
 You can find the default configuration at ``bibchex/data/default_config.json`` in the source. Copy that file to ``~/.config/bibchex.json`` or anywhere else. If you did copy it to some arbitrary location, you must pass the path to that file via the ``--config`` command line switch.
 
-Have a look at the configuration documenation TODO to see what can be configured.
+Have a look at the `configuration documentation <https://tinloaf.github.io/bibchex/config.html>`_ to see what can be configured.
 
 
 Running
