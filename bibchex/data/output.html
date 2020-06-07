@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+		<title>BibCheX Output</title>
+		<style>
+			div.entry {
+					border-radius: 5px;
+					background: #fafafafa;
+					border: 1px solid black;
+					padding: 5px;
+					width: 90%;
+					margin-bottom: 15px;
+			}
+
+			div.problems {
+					margin-top: 15px;
+					border-radius: 5px;
+					background: #eeeeee;
+					border: 1px solid black;
+					padding: 5px;
+					margin-bottom: 15px;
+			}
+			
+			div.diffs {
+					border-radius: 5px;
+					background: #eeeeee;
+					border: 1px solid black;
+					padding: 5px;
+					margin-bottom: 15px;
+			}
+			
+			div.title {
+					font-size: 18pt;
+					font-weight: bold;
+			}
+			
+			div.intro {
+					border-radius: 5px;
+					background: #cccccc;
+					padding: 5px;
+					width: 90%;
+					margin-bottom: 15px;
+			}
+
+			div[class=problem] {
+					border-top: 1px dashed black;
+					margin-top: 5px;
+					padding-top: 5px;
+			}
+			div[class=diff] {
+					border-top: 1px dashed black;
+					margin-top: 5px;
+					padding-top: 5px;
+			}
+
+			td.title {
+					font-style: italic;
+					padding-right: 10px;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<h1>BibCheX Results</h1>
+
+		<Div class="intro">
+			<p>This file contains the results from running BibCheX on file {{ input_file }} at {{ now }}.</p>
+			<p>It contains a total of {{ total_entries }} entries.</p>
+		</div>
+
+		<h2>Per-Item Results</h2>
+		<div class="intro">
+			The following list contains one block for each entry in your BibTeX file. BibTeX entries that did not lead to any problems are skipped. Each entry block has two sections, the first one listing differences to meta data pulled from data sources, the second block listing failed checks.
+		</div>
+
+		
+
+
+		<div class="entries">
+		{% for entry in entries %}
+		<div class="entry">
+			<div class="title">Title: {{entry.title}}</div>
+			<div class="entrykey">BibTeX Key: {{entry.key}}</div>
+
+
+			<!-- --- Problems --- -->
+
+			{% if entry.problems|length > 0 %}
+			<div class="problems">
+				<h4>Failed Checks</h4>
+
+				{% for problem in entry.problems %}
+				<div class="problem{%if loop.first %} first{% endif %}">
+					<table>
+						<tr><td class="title">Problem</td><td class="content">{{problem.problem_type}}</td></tr>
+						<tr><td class="title">Message</td><td class="content">{{problem.message}}</td></tr>
+						<tr><td class="title">Details</td><td class="content">{{problem.details}}</td></tr>
+					</table>
+				</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+			
+
+			<!-- --- Differences --- -->
+			{% if entry.differences|length > 0 %}
+			<div class="diffs">
+				<h4>Differences to pulled-in data</h4>
+
+
+				{% for diff in entry.differences %}
+				<div class="diff{%if loop.first %} first{% endif %}">
+					<table>
+						<tr><td class="title">Field</td><td class="content">{{diff.field}}</td></tr>
+						<tr><td class="title">Suggestion(s)</td><td class="content">
+								{%- if diff.suggestion is iterable and diff.suggestion is not string %}
+								{%- if diff.suggestion|length > 1 %}
+								<ul>
+									{% for sugg in diff.suggestion %}
+									<li>{{sugg}}</li>
+									{% endfor %}
+								</ul>
+								{% else %}
+								{{diff.suggestion[0]}}
+								{% endif %}
+								{% else %}					
+								{{diff.suggestion}}
+								{% endif %}
+						</td></tr>
+						<tr><td class="title">Current Value</td><td class="content">{% if diff.old|length > 0 %}{{diff.old}}{% else %}(empty){% endif %}</td></tr>
+						<tr><td class="Title">Data Source</td><td class="content">{{diff.source}}</td></tr>
+					</table>
+				</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+
+			</div>
+			{% endfor %} <!-- entry loop -->
+		</div> <!-- entries div -->
+
+		<div class="global-problems">
+			<h2>Cross-Entry Problems</h2>
+
+			<div class="intro">
+			This lists consistency problems involving mulitple entries.
+			</div>
+
+			{% for problem in global_problems %}
+			<div class="global-problem">
+				{{problem.message}}
+			</div>
+			{% endfor %}
+</div>
+
+</body>
+</html>

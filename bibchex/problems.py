@@ -1,0 +1,3 @@
+class RetrievalProblem(Exception):
+    pass
+

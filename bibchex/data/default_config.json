@@ -1,0 +1,49 @@
+{
+		"required": ["author", "title", "year"],
+		"dot_initials": true,
+		"authors_ignore_allcaps": true,
+		"title_ignore_allcaps": true,
+
+		"middle_name_allcaps_okay": true,
+		
+		"journal_no_abbrevs": true,
+
+		"crossref_plus": "",
+		"crossref_mailto": "put_some_valid_email_address_here@example.com",
+
+		"wanted": ["title", "author", "editor", "journal", "publisher", "organization", "year", "booktitle", "volume", "number", "issue", "isbn", "issn"],
+
+		"isbn_format": "masked",
+		"isbn_length": 13,
+		
+		"sub": [
+				{
+						"select_field": "entrytype",
+						"select_re": "article",
+						"required": ["author", "title", "journal", "year"]
+				},
+				{
+						"select_field": "entrytype",
+						"select_re": "book",
+						"required": ["author", "title", "publisher", "year"]
+				},
+				{
+						"select_field": "entrytype",
+						"select_re": "booklet",
+						"required": ["author", "title", "year"]
+				},
+				{
+						"select_field": "entrytype",
+						"select_re": "inproceedings",
+						"required": ["author", "title", "booktitle", "year"],
+						"prefer_organization": true,
+						"forbidden_fields": ["isbn"]
+				},
+				{
+						"select_field": "entrytype",
+						"select_re": "misc",
+						"required": ["title"],
+						"prefer_organization": true
+				}
+		]
+}

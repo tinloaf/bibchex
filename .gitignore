@@ -1,0 +1,11 @@
+*~
+*.pyc
+*\#
+dist/*
+build/*
+
+*.egg-info
+
+.dir-locals.el
+
+doc/_build/*
