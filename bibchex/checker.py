@@ -169,8 +169,8 @@ class Checker(object):
             parser = bibtexparser.bparser.BibTexParser(
                 common_strings=True)
             # TODO how much of my own magic ist still necessary here?
-            parser.customization = bibtexparser.customization.\
-                homogenize_latex_encoding
+#            parser.customization = bibtexparser.customization.\
+#                homogenize_latex_encoding
             self._bibtex_data = parser.parse_file(bibtex_file)
         entry_list = [Entry(bentry, self._ui)
                       for bentry in self._bibtex_data.entries]

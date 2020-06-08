@@ -93,10 +93,14 @@ class CrossrefSource(object):
                 suggested_title = results[i]['title']
                 doi = results[i]['DOI']
 
-                fuzz_score = fuzz.partial_ratio(title, suggested_title)
-                if fuzz_score >= self._cfg.get('doi_fuzzy_threshold', entry,
-                                               90):
-                    return doi
+                if not isinstance(suggested_title, list):
+                    suggested_title = [ suggested_title ]
+                for possibility in suggested_title:
+                    fuzz_score = fuzz.partial_ratio(title.lower(),
+                                                    possibility.lower())
+                    if fuzz_score >= self._cfg.get('doi_fuzzy_threshold', entry,
+                                                   90):
+                        return doi
 
         return None
 
@@ -118,7 +122,7 @@ class CrossrefSource(object):
                         done = True
                     else:
                         # Too specific search? Loosen search terms
-                        if step < 2:
+                        if step < 3:
                             step += 1
                         else:
                             done = True

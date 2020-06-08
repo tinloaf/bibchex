@@ -9,7 +9,7 @@ FIELDS = ('ID', 'ENTRYTYPE', 'journal', 'comments', 'pages',
           'volume', 'keyword', 'url', 'doi', 'booktitle',
           'publisher', 'number', 'isbn', 'issn', 'address',
           'edition', 'organization')
-UNLATEXIFY_FIELDS = ('title', 'abstract', 'journal', 'booktitle')
+UNLATEXIFY_FIELDS = ('title', 'abstract', 'journal', 'booktitle', 'url', 'doi')
 BOOL_OPTIONS = ("nodoi",)
 
 
