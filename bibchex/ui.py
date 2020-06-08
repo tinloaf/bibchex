@@ -17,7 +17,7 @@ def wrapafter(s, length):
         # No space before. Do an intra-word wrap
         return (s[:length], s[length:])
 
-    if (i < length/2):
+    if i < length/2:
         # Would only fill half of this line. Do an intra-word wrap
         return (s[:length], s[length:])
 

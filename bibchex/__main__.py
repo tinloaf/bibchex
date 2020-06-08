@@ -35,7 +35,7 @@ parser.add_argument('output_file', nargs=1, type=str,
 def main(passed_args=None):
     if passed_args is None:
         passed_args = sys.argv[1:]
-        
+
     args = parser.parse_args(passed_args)
 
     if args.ui_gui:
@@ -70,6 +70,7 @@ def main(passed_args=None):
         ui.error("Traceback", exc_str)
 
     ui.wait()
+
 
 if __name__ == '__main__':
     main()

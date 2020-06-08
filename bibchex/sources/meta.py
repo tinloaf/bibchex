@@ -1,8 +1,8 @@
-import aiohttp
 import re
 from html.parser import HTMLParser
-
 from urllib.parse import urlparse, urlunparse
+
+import aiohttp
 from nameparser import HumanName
 
 from bibchex.config import Config
@@ -14,6 +14,7 @@ from bibchex.data import Suggestion
 
 class RedirectException(Exception):
     def __init__(self, url, base_url):
+        super().__init__()
         self.url = url
         self.base_url = base_url
 

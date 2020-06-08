@@ -1,10 +1,11 @@
-from bibchex.data import Suggestion
-from bibchex.problems import RetrievalProblem
 import asyncio
-from bibchex.asyncrate import SyncRateLimiter
-from functools import partial
 import urllib
 import requests
+from functools import partial
+
+from bibchex.data import Suggestion
+from bibchex.problems import RetrievalProblem
+from bibchex.asyncrate import SyncRateLimiter
 
 
 def path_exists(d, path):
@@ -33,10 +34,10 @@ class DataCiteSource(object):
             result = await loop.run_in_executor(
                 None, partial(self._query_blocking, entry))
         except requests.exceptions.RequestException as e:
-            self._ui.error("meta", "Connection problem: {}".format(e))
+            self._ui.error("datacite", "Connection problem: {}".format(e))
             problem = e
         except RetrievalProblem as e:
-            self._ui.error("meta", "Retrieval problem: {}".format(e))
+            self._ui.error("datacite", "Retrieval problem: {}".format(e))
             problem = e
 
         return (result, problem)

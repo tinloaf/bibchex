@@ -1,10 +1,12 @@
+import asyncio
+from functools import partial
+
 import bibtexparser
+
 from bibchex.data import Suggestion, Entry
 from bibchex.problems import RetrievalProblem
-import asyncio
 from isbnlib import meta, registry, notisbn, ISBNLibException
 from bibchex.asyncrate import SyncRateLimiter
-from functools import partial
 
 
 class ISBNSource(object):
@@ -63,7 +65,7 @@ class ISBNSource(object):
 
         parsed_data = bibtexparser.loads(bibtex_data)
 
-        if (len(parsed_data.entries) != 1):
+        if len(parsed_data.entries) != 1:
             raise RetrievalProblem(
                 "ISBN search did not return exactly one result.")
 

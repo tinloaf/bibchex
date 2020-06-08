@@ -51,8 +51,6 @@ class SyncRateLimiter(object):
         self._count -= 1
         self._lock.release()
 
-        return
-
     def _replenish(self):
         if self._count > 0:
             return
@@ -62,6 +60,6 @@ class SyncRateLimiter(object):
             self._count = self._maxcount
             self._last_filled = time.monotonic()
             return
-        else:
-            time.sleep(self._interval - elapsed + 0.05)
-            return self._replenish()
+
+        time.sleep(self._interval - elapsed + 0.05)
+        self._replenish()

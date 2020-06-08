@@ -1,4 +1,3 @@
-import json
 import re
 import asyncio
 import os
@@ -57,7 +56,7 @@ class CrossrefSource(object):
             os.environ['CR_API_AGENT'] = \
                 ('BibChex/0.1 '
                  '(https://github.com/tinloaf/bibchex; mailto:{})').format(
-                self._cfg.get('crossref_mailto'))
+                     self._cfg.get('crossref_mailto'))
             os.environ['CR_API_MAILTO'] = self._cfg.get('crossref_mailto')
         else:
             os.environ['CR_API_AGENT'] = \
@@ -99,9 +98,7 @@ class CrossrefSource(object):
                                                90):
                     return doi
 
-            return None
-        else:
-            return None
+        return None
 
     async def get_doi(self, entry):
         loop = asyncio.get_event_loop()

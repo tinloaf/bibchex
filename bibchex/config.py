@@ -26,7 +26,8 @@ class ConfigImpl(object):
     def get(self, key, entry=None, default=None):
         if entry:
             for (sel_field, sel_re, sub_cfg) in self._sub_configs:
-                if sel_field in entry.data and sel_re.match(entry.data[sel_field]):
+                if sel_field in entry.data and \
+                   sel_re.match(entry.data[sel_field]):
                     subval = sub_cfg.get(key, entry=entry)
                     if subval:
                         return subval
@@ -40,7 +41,7 @@ class Config(object):
 
     def __init__(self, path=None):
         if path:
-            assert(not Config.instance)
+            assert not Config.instance
             with open(path, "r") as conffile:
                 data = json.load(conffile)
                 Config.instance = ConfigImpl(data)
@@ -49,7 +50,7 @@ class Config(object):
                 data = json.loads(pkgutil.get_data('bibchex',
                                                    'data/default_config.json'))
                 Config.instance = ConfigImpl(data)
-            assert(Config.instance)
+            assert Config.instance
 
     def __getattr__(self, name):
         return getattr(self.instance, name)

@@ -1,7 +1,8 @@
-import bibtexparser
 import concurrent
 import sys
 import asyncio
+
+import bibtexparser
 
 from bibchex.data import Entry, Problem
 from bibchex.differ import Differ

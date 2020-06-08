@@ -6,6 +6,8 @@ class CommonOutput(object):
         self._problems = problems
         self._global_problems = global_problems
         self._input_filename = input_filename
+        self._grouped_diffs = {}
+        self._grouped_problems = {}
 
     def _group(self):
         self._grouped_diffs = {}

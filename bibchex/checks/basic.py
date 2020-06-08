@@ -25,8 +25,8 @@ class DOIChecker(object):
                     entry.get_suggested_dois())
 
             return [(type(self).NAME, "Missing DOI", details)]
-        else:
-            return []
+
+        return []
 
 
 class DOIURLChecker(object):
@@ -36,7 +36,7 @@ class DOIURLChecker(object):
 
     def __init__(self):
         self._cfg = Config()
-    
+
     async def check(self, entry):
         if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
             return []

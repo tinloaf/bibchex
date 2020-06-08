@@ -38,10 +38,7 @@ def lower_case_first_letters(original):
             # TODO The efficiency is below 9000. :(
             phrase = phrase[:i] + lower_letter + phrase[i+1:]
 
-        if is_word_separator(phrase[i]):
-            last_whitespace = True
-        else:
-            last_whitespace = False
+        last_whitespace = is_word_separator(phrase[i])
 
         i += 1
     return phrase

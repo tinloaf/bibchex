@@ -64,8 +64,8 @@ class PreferOrganizationChecker(object):
         if entry.data.get('publisher') and not entry.data.get('organization'):
             return [(type(self).NAME,
                      "Entry should prefer organization over publisher.", "")]
-        else:
-            return []
+
+        return []
 
 
 class PreferDateChecker(object):

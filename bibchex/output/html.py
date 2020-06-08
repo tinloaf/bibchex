@@ -49,7 +49,7 @@ class HTMLOutput(CommonOutput):
     def write(self, filename):
         entry_data = [self._generate_per_entry_structure(
             entry) for entry in self._entries
-            if self._should_output_entry(entry)]
+                      if self._should_output_entry(entry)]
 
         data = {
             'total_entries': len(self._entries),

@@ -19,7 +19,7 @@ class GenericFuzzySimilarityChecker(object):
         option = "check_{}".format(self._name)
         if not self._cfg.get(option, entry, True):
             return []
-        
+
         for field in self._cls.FIELDS:
             val = entry.data.get(field)
             if not val:
@@ -57,7 +57,7 @@ class GenericAbbrevChecker(object):
         option = "check_{}".format(self._name)
         if not self._cfg.get(option, entry, True):
             return []
-        
+
         for field in self._cls.FIELDS:
             val = entry.data.get(field)
             if not val:

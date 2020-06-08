@@ -81,8 +81,8 @@ class Entry(object):
             best_doi = max(set(self._suggested_dois),
                            key=self._suggested_dois.count)
             return best_doi
-        else:
-            return None
+
+        return None
 
     def get_suggested_dois(self):
         return self._suggested_dois
