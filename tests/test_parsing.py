@@ -26,3 +26,19 @@ class TestParsing:
         assert entries['dummy'].data.get('doi') == expected
         
         
+    def test_parsing_authors(self, datadir):
+        f = datadir['authors.bib']
+        entries = parse_to_entries(f)
+
+        assert entries['simpleAuthor'].authors == [('Lukas', 'Barth')]
+        assert entries['onlyLastname'].authors == [('', 'Barth')]
+        assert entries['simpleReverseAuthor'].authors == [('Lukas', 'Barth')]
+        assert entries['twoAuthors'].authors == [('Lukas', 'Barth'), ('Dorothea', 'Wagner')]
+        assert entries['twoAuthorsMixed'].authors == [('Lukas', 'Barth'), ('Dorothea', 'Wagner')]
+        assert entries['firstNameAbbrev'].authors == [('L', 'Barth')]
+        assert entries['firstNameAbbrevReverse'].authors == [('L', 'Barth')]
+        assert entries['firstNameDotted'].authors == [('L.', 'Barth')]
+        assert entries['firstNameDottedReverse'].authors == [('L.', 'Barth')]
+        assert entries['middleNames'].authors == [('Lukas F J', 'Barth')]
+        assert entries['middleNamesReverse'].authors == [('Lukas F J', 'Barth')]
+

@@ -21,7 +21,8 @@ requires = [
 test_requires = [
     "pytest>=5.4.3",
     "pytest-asyncio>=0.12.0",
-    "pytest-datadir-ng>=1.1.1"
+    "pytest-datadir-ng>=1.1.1",
+    "aioresponses>=0.6.4"
 ]
 
 setup(

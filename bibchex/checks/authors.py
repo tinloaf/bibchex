@@ -17,15 +17,14 @@ class InitialDottedChecker(object):
 
     async def check_one(self, field, name, entry):
         should_dot = self._cfg.get('author_initial_want_dotted', entry, True)
-
         problems = []
         for author in getattr(entry, field):
             (first, last) = author
+
             words = first.split(" ") + last.split(" ")
             for word in words:
                 if len(word) == 0:
                     continue
-
                 if not any(c.islower() for c in word):
                     if should_dot and word[-1] != '.':
                         problems.append(
@@ -61,10 +60,19 @@ class AllcapsNameChecker(object):
         for author in getattr(entry, field):
             (first, last) = author
             first_lower_count = sum((int(c.islower()) for c in first))
-            if first_lower_count == 0:
+            first_upper_count = sum((int(c.isupper()) for c in first))
+            # Length check > 1 b/c otherwise it is considered an abbreviation
+            if first_lower_count == 0 and first_upper_count > 1:
                 problems.append(
                     (type(self).NAME,
-                     "{} '{} {}' seems to have a bogus first name."
+                     "{} '{} {}' seems to have an all-caps first name."
+                     .format(name, first, last), ""))
+            last_lower_count = sum((int(c.islower()) for c in last))
+            last_upper_count = sum((int(c.isupper()) for c in last))
+            if last_lower_count == 0 and last_upper_count > 1:
+                problems.append(
+                    (type(self).NAME,
+                     "{} '{} {}' seems to have an all-caps last name."
                      .format(name, first, last), ""))
         return problems
 
@@ -165,3 +173,5 @@ class LastNameInitialChecker(object):
                       "that is in abbreviated or all-caps.")
                      .format(name, given, last), ""))
         return problems
+
+

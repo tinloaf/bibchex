@@ -32,7 +32,6 @@ class DOIChecker(object):
 class DOIURLChecker(object):
     NAME = "doi_url"
     DOI_RE = re.compile(r'https?://(dx\.)?doi.org/.*')
-    HTTP_RE = re.compile(r'https?://.*', re.IGNORECASE)
 
     def __init__(self):
         self._cfg = Config()
@@ -49,19 +48,6 @@ class DOIURLChecker(object):
         m = DOIURLChecker.DOI_RE.match(url)
         if m:
             problems.append((type(self).NAME, "URL points to doi.org", ""))
-
-        m = DOIURLChecker.HTTP_RE.match(url)
-        if not m:
-            # Not a http / https URL. We don't know how to handle this.
-            return problems
-
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                status = resp.status
-                if status >= 400 or status < 200:
-                    problems.append(("dead_url", "URL seems inaccessible",
-                                     "Accessing URL '{}' gives status code {}"
-                                     .format(url, status)))
 
         return problems
 
@@ -147,13 +133,13 @@ class ForbiddenFieldsChecker(object):
 
             if field == 'author':
                 # Special handling
-                if len(entry.authors) >= 0:
+                if len(entry.authors) > 0:
                     problems.append(
                         (type(self).NAME,
                          "Forbidden field 'author' present", ""))
             if field == 'editor':
                 # Special handling
-                if len(entry.editors) >= 0:
+                if len(entry.editors) > 0:
                     problems.append(
                         (type(self).NAME,
                          "Forbidden field 'editor' present", ""))

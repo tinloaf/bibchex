@@ -178,9 +178,12 @@ class Entry(object):
             elif comma_count == 1:
                 # Last, First format
                 (last_name, first_name) = author_name.split(",")
+                first_name = first_name.strip()
             elif comma_count == 2:
                 # Special case for Doe, Jr., Jon
                 (last_name, jr, first_name) = author_name.split(",")
+                jr = jr.strip()
+                first_name = first_name.strip()
                 last_name = "{}, {}".format(last_name, jr)
             else:
                 self._ui.warning("Entry",
