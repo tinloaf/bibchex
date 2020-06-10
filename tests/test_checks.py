@@ -9,6 +9,103 @@ def mhttp():
         yield m
 
 
+class TestPublicationChecks:
+    def test_journal_abbrev(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_journal_abbrev': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('dottedJournal', 'journal_abbrev') in problem_set
+        assert ('abbrevJournal', 'journal_abbrev') in problem_set
+        assert ('fullJournal', 'journal_abbrev') not in problem_set
+
+    def test_journal_similarity(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_journal_similarity': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        print(global_problems)
+        assert False
+
+class TestISBNChecks:
+    def test_valid_isbn(self, datadir, event_loop):
+        f = datadir['problem_isbn.bib']
+
+        set_config({'check_isbn_valid': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('hasInvalidISBN', 'isbn_valid') in problem_set
+        assert ('cormen13masked', 'isbn_valid') not in problem_set
+        assert ('cormen13unmasked', 'isbn_valid') not in problem_set
+        assert ('cormen10unmasked', 'isbn_valid') not in problem_set
+        assert ('cormen10masked', 'isbn_valid') not in problem_set
+
+    def test_isbn_format(self, datadir, event_loop):
+        f = datadir['problem_isbn.bib']
+
+        set_config({'check_isbn_format': True,
+                    'isbn_format': 'canonical'})
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('hasInvalidISBN', 'isbn_format') not in problem_set
+        assert ('cormen13masked', 'isbn_format') in problem_set
+        assert ('cormen13unmasked', 'isbn_format') not in problem_set
+        assert ('cormen10unmasked', 'isbn_format') not in problem_set
+        assert ('cormen10masked', 'isbn_format') in problem_set
+
+        set_config({'check_isbn_format': True,
+                    'isbn_format': 'masked'})
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('hasInvalidISBN', 'isbn_format') not in problem_set
+        assert ('cormen13masked', 'isbn_format') not in problem_set
+        assert ('cormen13unmasked', 'isbn_format') in problem_set
+        assert ('cormen10unmasked', 'isbn_format') in problem_set
+        assert ('cormen10masked', 'isbn_format') not in problem_set
+
+    def test_isbn_length(self, datadir, event_loop):
+        f = datadir['problem_isbn.bib']
+
+        set_config({'check_isbn_length': True,
+                    'isbn_length': 13})
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('hasInvalidISBN', 'isbn_length') not in problem_set
+        assert ('cormen13masked', 'isbn_length') not in problem_set
+        assert ('cormen13unmasked', 'isbn_length') not in problem_set
+        assert ('cormen10unmasked', 'isbn_length') in problem_set
+        assert ('cormen10masked', 'isbn_length') in problem_set
+
+        set_config({'check_isbn_length': True,
+                    'isbn_length': 10})
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('hasInvalidISBN', 'isbn_length') not in problem_set
+        assert ('cormen13masked', 'isbn_length') in problem_set
+        assert ('cormen13unmasked', 'isbn_length') in problem_set
+        assert ('cormen10unmasked', 'isbn_length') not in problem_set
+        assert ('cormen10masked', 'isbn_length') not in problem_set
+
+
 class TestBasicChecks:
     def test_doi(self, datadir, event_loop):
         f = datadir['problem_basic.bib']

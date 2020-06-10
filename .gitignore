@@ -4,7 +4,11 @@
 dist/*
 build/*
 
+.eggs/*
 *.egg-info
+
+.coverage
+*,cover
 
 .dir-locals.el
 

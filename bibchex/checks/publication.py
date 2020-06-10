@@ -12,9 +12,8 @@ class JournalAbbrevChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if self._cfg.get('check_{}'.format(type(self).NAME), entry, False):
+        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, False):
             return []
-
         problems = []
         for field in JournalAbbrevChecker.FIELDS:
             val = entry.data.get(field, '')
@@ -105,7 +104,6 @@ class DateParseableChecker(object):
 
         try:
             d = parse_datetime(entry.data.get('date'))
-            print(d)
             return []
         except ValueError:
             return [(type(self).NAME,
