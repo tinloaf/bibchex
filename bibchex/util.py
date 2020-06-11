@@ -202,3 +202,7 @@ def is_abbreviation(s):
 def contains_abbreviation(s):
     words = split_at_multiple(s, ' \t\n')
     return any((is_abbreviation(w) for w in words))
+
+def sorted_pairs(iterable):
+    s = sorted(iterable)
+    return ((s[i], s[j]) for i in range(0, len(s)) for j in range(i+1, len(s)))

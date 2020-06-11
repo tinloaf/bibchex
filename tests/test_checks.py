@@ -29,11 +29,114 @@ class TestPublicationChecks:
         set_config({'check_journal_similarity': True})
 
         (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.source, problem.message)
+                          for problem in global_problems)
+
+        assert len(problem_set) == 1
+        assert ('journal_similarity',
+                ("Journal names 'Theoretica Computer Science' and "
+                 "'Theoretical Computer Science'"
+                 " seem very similar.")) in problem_set
+
+    def test_publisher_similarity(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_publisher_similarity': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.source, problem.message)
+                          for problem in global_problems)
+
+        assert len(problem_set) == 1
+        assert ('publisher_similarity',
+                ("Publisher names 'Some Fancy Publishing Hose' and "
+                 "'Some Fancy Publishing House'"
+                 " seem very similar.")) in problem_set
+
+    def test_journal_mutual_abbrev(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_journal_mutual_abbrev': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.source, problem.message)
+                          for problem in global_problems)
+
+        assert ('journal_mutual_abbrev',
+                ("Journal 'Theoretica Computer Science' could be an abbreviation of "
+                 "'Theoretical Computer Science'.")) in problem_set
+        assert ('journal_mutual_abbrev',
+                ("Journal 'Theo Comp Sci' could be an abbreviation of "
+                 "'Theoretical Computer Science'.")) in problem_set
+        assert ('journal_mutual_abbrev',
+                ("Journal 'Theo Comp Sci' could be an abbreviation of "
+                 "'Theoretica Computer Science'.")) in problem_set
+        assert ('journal_mutual_abbrev',
+                ("Journal 'TCS' could be an abbreviation of "
+                 "'Theoretica Computer Science'.")) in problem_set
+        # Many more!
+
+    def test_publisher_mutual_abbrev(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_publisher_mutual_abbrev': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.source, problem.message)
+                          for problem in global_problems)
+
+        assert ('publisher_mutual_abbrev',
+                ("Publisher 'So Fa Pu Ho' could be an abbreviation of "
+                 "'Some Fancy Publishing House'.")) in problem_set
+
+    def test_prefer_organization(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_prefer_organization': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
         problem_set = set((problem.entry_id, problem.source)
                           for problem in problems)
 
-        print(global_problems)
-        assert False
+        assert ('fullJournal', 'prefer_organization') in problem_set
+        assert ('abbrevJournal', 'prefer_organization') not in problem_set
+
+    def test_prefer_date(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_prefer_date': True,
+                    'prefer_date_or_year': False})
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('abbrevJournal', 'prefer_date') not in problem_set
+        assert ('fullJournal', 'prefer_date') in problem_set
+        assert ('shortJournal', 'prefer_date') in problem_set
+        assert ('typoJournal', 'prefer_date') in problem_set
+
+        set_config({'check_prefer_date': True,
+                    'prefer_date_or_year': True})
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('abbrevJournal', 'prefer_date') not in problem_set
+        assert ('fullJournal', 'prefer_date') in problem_set
+        assert ('shortJournal', 'prefer_date') in problem_set
+        assert ('typoJournal', 'prefer_date') not in problem_set
+
+    def test_parseable_date(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_date_parseable': True})
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('brokenDate', 'date_parseable') in problem_set
+        assert ('abbrevJournal', 'date_parseable') not in problem_set
+
 
 class TestISBNChecks:
     def test_valid_isbn(self, datadir, event_loop):

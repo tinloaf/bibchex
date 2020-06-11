@@ -57,9 +57,6 @@ class PreferOrganizationChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if self._cfg.get('check_{}'.format(type(self).NAME), entry, False):
-            return []
-
         if entry.data.get('publisher') and not entry.data.get('organization'):
             return [(type(self).NAME,
                      "Entry should prefer organization over publisher.", "")]
@@ -74,13 +71,13 @@ class PreferDateChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if self._cfg.get('check_{}'.format(type(self).NAME), entry, False):
-            return []
-
-        if ((any((entry.data.get(key) for key in ('year', 'month', 'day')))) or
-                (any((entry.data.get(key) for key in ('month', 'day'))) and
-                 self._cfg.get('prefer_date_or_year', entry, True)) and
-                not entry.data.get('date')):
+        if ((entry.data.get('date') is None) and
+            (
+                (any((entry.data.get(key) for key in ('year', 'month', 'day')))
+                 and not self._cfg.get('prefer_date_or_year', entry, True))
+                or
+                (any((entry.data.get(key) for key in ('month', 'day'))))
+        )):
             return [(type(self).NAME,
                      ("The 'date' field is preferred over "
                       "the 'day/month/year' fields."),
@@ -96,9 +93,6 @@ class DateParseableChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if self._cfg.get('check_{}'.format(type(self).NAME), entry, False):
-            return []
-
         if not entry.data.get('date'):
             return []
 

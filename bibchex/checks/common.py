@@ -1,7 +1,8 @@
+from fuzzywuzzy import fuzz
+
 from bibchex.config import Config
 from bibchex.strutil import AbbrevFinder
-from itertools import combinations
-from fuzzywuzzy import fuzz
+from bibchex.util import sorted_pairs
 
 
 class GenericFuzzySimilarityChecker(object):
@@ -16,10 +17,6 @@ class GenericFuzzySimilarityChecker(object):
             GenericFuzzySimilarityChecker.SEEN_NAMES[self._name] = set()
 
     async def check(self, entry):
-        option = "check_{}".format(self._name)
-        if not self._cfg.get(option, entry, True):
-            return []
-
         for field in self._cls.FIELDS:
             val = entry.data.get(field)
             if not val:
@@ -29,11 +26,16 @@ class GenericFuzzySimilarityChecker(object):
         return []
 
     @classmethod
+    async def reset(cls):
+        GenericFuzzySimilarityChecker.SEEN_NAMES[cls.NAME] = set()
+
+    @classmethod
     async def complete(cls):
         name = cls.NAME
         problems = []
-        for (n1, n2) in combinations(
-                GenericFuzzySimilarityChecker.SEEN_NAMES[name], 2):
+        # We only use sorted_pairs here for determinism, makes it easier to test
+        for (n1, n2) in sorted_pairs(
+                GenericFuzzySimilarityChecker.SEEN_NAMES[name]):
             if fuzz.partial_ratio(n1, n2) > 95:  # TODO make configurable
                 problems.append((name,
                                  "{} names '{}' and '{}' seem very similar."
@@ -54,10 +56,6 @@ class GenericAbbrevChecker(object):
             GenericAbbrevChecker.SEEN_NAMES[self._name] = set()
 
     async def check(self, entry):
-        option = "check_{}".format(self._name)
-        if not self._cfg.get(option, entry, True):
-            return []
-
         for field in self._cls.FIELDS:
             val = entry.data.get(field)
             if not val:
@@ -65,6 +63,10 @@ class GenericAbbrevChecker(object):
             GenericAbbrevChecker.SEEN_NAMES[self._name].add(val)
 
         return []
+
+    @classmethod
+    async def reset(cls):
+        GenericAbbrevChecker.SEEN_NAMES[cls.NAME] = set()
 
     @classmethod
     async def complete(cls):

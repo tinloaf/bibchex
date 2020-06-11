@@ -10,6 +10,7 @@ from bibchex.sources import SOURCES, CrossrefSource
 from bibchex.ui import UI
 from bibchex.checks import CCHECKERS
 from bibchex.output import HTMLOutput
+from bibchex.config import Config
 
 
 class Checker(object):
@@ -27,6 +28,7 @@ class Checker(object):
         self._global_problems = []
 
         self._ui = UI()
+        self._cfg = Config()
 
     async def run(self):
         self._ui.message("Main", "Parsing Bibtex")
@@ -83,22 +85,28 @@ class Checker(object):
                 self._diffs.extend(d.diff(s))
 
     async def _check_consistency(self):
+        tasks = []
+        task_info = []
         for CChecker in CCHECKERS:
-            entry_order = []
-            tasks = []
-            for (_, entry) in self._entries.items():
+            if hasattr(CChecker, 'reset'):
+                await CChecker.reset()
+                
+        for CChecker in CCHECKERS:
+            for entry in self._entries.values():
                 ccheck = CChecker()
-                task = ccheck.check(entry)
-                entry_order.append(entry)
-                tasks.append(task)
+                if self._cfg.get("check_{}".format(CChecker.NAME), entry, True):
+                    task = ccheck.check(entry)
+                    task_info.append((CChecker, entry))
+                    tasks.append(task)
 
-            results = await asyncio.gather(*tasks)
-            for (entry, problems) in zip(entry_order, results):
-                for (problem_type, message, details) in problems:
-                    self._problems.append(
-                        Problem(entry.get_id(), CChecker.NAME, problem_type,
-                                message, details))
+        results = await asyncio.gather(*tasks)
+        for ((CChecker, entry), problems) in zip(task_info, results):
+            for (problem_type, message, details) in problems:
+                self._problems.append(
+                    Problem(entry.get_id(), CChecker.NAME, problem_type,
+                            message, details))
 
+        for CChecker in CCHECKERS:
             if hasattr(CChecker, 'complete'):
                 global_results = await CChecker.complete()
                 for (problem_type, message, details) in global_results:
