@@ -2,7 +2,7 @@ from bibchex.strutil import split_at_multiple
 
 
 class TitleCapitalizationChecker(object):
-    NAME = 'title-capitalization'
+    NAME = 'title_capitalization'
 
     async def check(self, entry):
         title = entry.raw_data.get('title', "")

@@ -191,3 +191,13 @@ Date Parseable Checker
 **Name**: `date_parseable`
 
 Checks if a date supplied via the `date` field is in a parseable form, i.e., a valid date.
+
+Title Checks
+------------
+
+Capitalization Checker
+^^^^^^^^^^^^^^^^^^^^^^
+
+**Name**: `title_capitalization`
+
+Checks that if the title contains a word with multiple capital letters, this words is set in curly braces. Otherwise, capitalization will likely be lost.

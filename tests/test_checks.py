@@ -9,6 +9,21 @@ def mhttp():
         yield m
 
 
+class TestTitleChecks:
+    def test_title_capitalization(self, datadir, event_loop):
+        f = datadir['problem_title.bib']
+
+        set_config({'check_title_capitalization': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('boringTitle', 'title_capitalization') not in problem_set
+        assert ('bracedTitle', 'title_capitalization') not in problem_set
+        assert ('fancyTitle', 'title_capitalization') in problem_set
+
+
 class TestPublicationChecks:
     def test_journal_abbrev(self, datadir, event_loop):
         f = datadir['problem_publication.bib']
