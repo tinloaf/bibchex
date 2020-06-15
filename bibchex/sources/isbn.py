@@ -35,10 +35,11 @@ class ISBNSource(object):
 
         try:
             gathered = await asyncio.gather(*tasks)
+            results = [res for res in gathered if res]
         except RetrievalProblem as e:
             problem = e
+            results = []
 
-        results = [res for res in gathered if res]
         if problem:
             results.append((None, problem))
 
@@ -63,7 +64,10 @@ class ISBNSource(object):
         except ISBNLibException as e:
             return (None, e)
 
-        parsed_data = bibtexparser.loads(bibtex_data)
+        try:
+            parsed_data = bibtexparser.loads(bibtex_data)
+        except:
+            raise RetrievalProblem("Data from ISBN source could not be parsed")
 
         if len(parsed_data.entries) != 1:
             raise RetrievalProblem(
