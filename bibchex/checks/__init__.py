@@ -13,4 +13,5 @@ CCHECKERS = [LastNameInitialChecker, AllcapsNameChecker,
              ISBNFormatChecker, ISBNLengthChecker,
              ValidISBNChecker, PreferDateChecker, DateParseableChecker,
              JournalMutualAbbrevChecker, PublisherMutualAbbrevChecker,
-             JournalSimilarityChecker, PublisherSimilarityChecker]
+             JournalSimilarityChecker, PublisherSimilarityChecker,
+             HasTitleChecker]

@@ -1,9 +1,29 @@
 from bibchex.strutil import split_at_multiple
+from bibchex.config import Config
 
+class HasTitleChecker(object):
+    NAME = "has_title"
+
+    def __init__(self):
+        self._cfg = Config()
+
+    async def check(self, entry):
+        problems = []
+
+        if entry.data.get('title') is None:
+            problems.append(
+                (type(self).NAME,
+                 "Missing title", ""))
+
+        return problems
+    
 
 class TitleCapitalizationChecker(object):
     NAME = 'title_capitalization'
 
+    def __init__(self):
+        self._cfg = Config()
+        
     async def check(self, entry):
         title = entry.raw_data.get('title', "")
         words = list(filter(lambda s: len(s) > 0,

@@ -23,6 +23,18 @@ class TestTitleChecks:
         assert ('bracedTitle', 'title_capitalization') not in problem_set
         assert ('fancyTitle', 'title_capitalization') in problem_set
 
+    def test_has_title(self, datadir, event_loop):
+        f = datadir['problem_title.bib']
+
+        set_config({'check_has_title': True})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('boringTitle', 'has_title') not in problem_set
+        assert ('noTitle', 'has_title') in problem_set
+
 
 class TestPublicationChecks:
     def test_journal_abbrev(self, datadir, event_loop):
