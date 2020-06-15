@@ -11,7 +11,7 @@ from ratelimit import RateLimitException
 from bibchex.data import Suggestion
 from bibchex.problems import RetrievalProblem
 from bibchex.config import Config
-
+from bibchex.strutil import flexistrip
 
 TYPE_MAPPING = {
     'journal-article': ['article'],
@@ -194,22 +194,22 @@ class CrossrefSource(object):
 
         # Special handling for authors
         for author_data in data.get('author', []):
-            s.add_author(author_data.get('given', ""),
-                         author_data.get('family', ""))
+            s.add_author(author_data.get('given', "").strip(),
+                         author_data.get('family', "").strip())
 
         # Special handling for editors
         for editor_data in data.get('editor', []):
-            s.add_editor(editor_data.get('given', ""),
-                         editor_data.get('family', ""))
+            s.add_editor(editor_data.get('given', "").strip(),
+                         editor_data.get('family', "").strip())
 
         # Special handling for journal / book title
         if btype in ['journal-article', 'book-chapter']:
-            journal = data.get('container-title')
+            journal = flexistrip(data.get('container-title'))
             if journal:
                 s.add_field('journal', journal)
 
         # Special handling for URL. Only take it if it's not a DOI-Url
-        url = data.get('URL')
+        url = flexistrip(data.get('URL'))
         if url and (CrossrefSource.DOI_URL_RE.match(url) is None):
             s.add_field('url', url)
 
@@ -224,10 +224,8 @@ class CrossrefSource(object):
             if not field_to:
                 continue
 
-            if field_from == 'title':
-                pass  # TODO should we handle this?
             if field_from in data:
-                s.add_field(field_to, data[field_from])
+                s.add_field(field_to, flexistrip(data[field_from]))
 
         self._ui.finish_subtask('CrossrefQuery')
         return s

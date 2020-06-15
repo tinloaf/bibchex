@@ -210,7 +210,6 @@ def chunked_pairs(items, chunk_count, chunk_number):
     # TODO this is very inefficient. Compute indices and create a generator!
     combinations = list(itertools.combinations(items, 2))
     chunk_size = max(int(math.floor(len(combinations) / chunk_count)), 1)
-    print(f"N: {len(combinations)} / CS: {chunk_size}")
 
     if chunk_number < chunk_count-1:
         return combinations[chunk_size * chunk_number:chunk_size * (chunk_number + 1)]
