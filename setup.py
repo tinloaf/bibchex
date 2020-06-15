@@ -15,7 +15,8 @@ requires = [
     "Jinja2>=2.11.1",
     "nameparser>=1.0.6",
     "python-dateutil>=2.8.1",
-    "ratelimit>=2.2.1"
+    "ratelimit>=2.2.1",
+    "python-Levenshtein>=0.12.0"
     ]
 
 test_requires = [

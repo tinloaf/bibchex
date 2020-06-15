@@ -1,8 +1,11 @@
+import os
+import asyncio
+
 from fuzzywuzzy import fuzz
 
 from bibchex.config import Config
 from bibchex.strutil import AbbrevFinder
-from bibchex.util import sorted_pairs
+from bibchex.util import chunked_pairs
 
 
 class GenericFuzzySimilarityChecker(object):
@@ -31,17 +34,37 @@ class GenericFuzzySimilarityChecker(object):
 
     @classmethod
     async def complete(cls):
+        cfg = Config()
+
+        def compute(seen_names, chunk_count, chunk_number):
+            problems = []
+            for (n1, n2) in chunked_pairs(list(seen_names), chunk_count, chunk_number):
+                if (n1 == n2):
+                    continue
+
+                if fuzz.partial_ratio(n1, n2) > 95:  # TODO make configurable
+                    problems.append((name,
+                                     "{} names '{}' and '{}' seem very similar."
+                                     .format(cls.MSG_NAME, n1, n2),
+                                     ""))
+            return problems
+
         name = cls.NAME
-        problems = []
-        # We only use sorted_pairs here for determinism, makes it easier to test
-        for (n1, n2) in sorted_pairs(
-                GenericFuzzySimilarityChecker.SEEN_NAMES[name]):
-            if fuzz.partial_ratio(n1, n2) > 95:  # TODO make configurable
-                problems.append((name,
-                                 "{} names '{}' and '{}' seem very similar."
-                                 .format(cls.MSG_NAME, n1, n2),
-                                 ""))
-        return problems
+        collected_problems = []
+        chunk_count = min(len(os.sched_getaffinity(0)) * 10,
+                          len(GenericFuzzySimilarityChecker.SEEN_NAMES[name]))
+        tasks = []
+        for i in range(0, chunk_count):
+            tasks.append(
+                asyncio.get_event_loop().run_in_executor(
+                    cfg.get_executor(),
+                    compute, GenericFuzzySimilarityChecker.SEEN_NAMES[name],
+                    chunk_count, i))
+
+        collected_results = await asyncio.gather(*tasks)
+
+        # Flatten lists
+        return [item for sublist in collected_results for item in sublist]
 
 
 class GenericAbbrevChecker(object):

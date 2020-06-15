@@ -1,3 +1,5 @@
+import math
+import itertools
 from datetime import datetime
 
 from dateutil.parser import parse as datetime_parser
@@ -202,6 +204,19 @@ def is_abbreviation(s):
 def contains_abbreviation(s):
     words = split_at_multiple(s, ' \t\n')
     return any((is_abbreviation(w) for w in words))
+
+
+def chunked_pairs(items, chunk_count, chunk_number):
+    # TODO this is very inefficient. Compute indices and create a generator!
+    combinations = list(itertools.combinations(items, 2))
+    chunk_size = max(int(math.floor(len(combinations) / chunk_count)), 1)
+    print(f"N: {len(combinations)} / CS: {chunk_size}")
+
+    if chunk_number < chunk_count-1:
+        return combinations[chunk_size * chunk_number:chunk_size * (chunk_number + 1)]
+    else:
+        return combinations[chunk_size * chunk_number:]
+
 
 def sorted_pairs(iterable):
     s = sorted(iterable)

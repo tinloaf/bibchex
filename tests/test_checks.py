@@ -60,10 +60,14 @@ class TestPublicationChecks:
                           for problem in global_problems)
 
         assert len(problem_set) == 1
-        assert ('journal_similarity',
-                ("Journal names 'Theoretica Computer Science' and "
-                 "'Theoretical Computer Science'"
-                 " seem very similar.")) in problem_set
+        assert (('journal_similarity',
+                 ("Journal names 'Theoretica Computer Science' and "
+                  "'Theoretical Computer Science'"
+                  " seem very similar.")) in problem_set or
+                ('journal_similarity',
+                 ("Journal names 'Theoretical Computer Science' and "
+                  "'Theoretica Computer Science'"
+                  " seem very similar.")) in problem_set)
 
     def test_publisher_similarity(self, datadir, event_loop):
         f = datadir['problem_publication.bib']
@@ -75,10 +79,14 @@ class TestPublicationChecks:
                           for problem in global_problems)
 
         assert len(problem_set) == 1
-        assert ('publisher_similarity',
-                ("Publisher names 'Some Fancy Publishing Hose' and "
-                 "'Some Fancy Publishing House'"
-                 " seem very similar.")) in problem_set
+        assert (('publisher_similarity',
+                 ("Publisher names 'Some Fancy Publishing Hose' and "
+                  "'Some Fancy Publishing House'"
+                  " seem very similar.")) in problem_set or
+                ('publisher_similarity',
+                 ("Publisher names 'Some Fancy Publishing House' and "
+                  "'Some Fancy Publishing Hose'"
+                  " seem very similar.")) in problem_set)
 
     def test_journal_mutual_abbrev(self, datadir, event_loop):
         f = datadir['problem_publication.bib']

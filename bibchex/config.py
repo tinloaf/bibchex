@@ -1,6 +1,8 @@
 import json
 import re
 import pkgutil
+import concurrent.futures
+import os
 
 
 class ConfigurationError(Exception):
@@ -10,11 +12,22 @@ class ConfigurationError(Exception):
 class ConfigImpl(object):
     """Implementation of the config singleton"""
 
-    def __init__(self, data):
+    def __init__(self, data, thread_count=None):
         self._data = data
         self._sub_configs = []
+        self._executor = None
 
         self._parse()
+        self._init_executor(thread_count)
+
+    def _init_executor(self, thread_count):
+        if thread_count is None:
+            if 'threads' in self._data:
+                thread_count = int(self._data['threads'])
+            else:
+                thread_count = len(os.sched_getaffinity(0))
+
+        self._executor = concurrent.futures.ThreadPoolExecutor(thread_count)
 
     def _parse(self):
         for data in self._data.get('sub', []):
@@ -22,6 +35,9 @@ class ConfigImpl(object):
             select_re = data['select_re']
             self._sub_configs.append(
                 (select_field, re.compile(select_re), ConfigImpl(data)))
+
+    def get_executor(self):
+        return self._executor
 
     def get(self, key, entry=None, default=None):
         if entry:
