@@ -70,7 +70,7 @@ class CrossrefSource(object):
            3: query by title
         """
         title = entry.data.get('title')
-        if not title:
+        if title is None:
             # Without a title, we're chanceless.
             self._ui.finish_subtask('CrossrefDOI')
             return None
@@ -90,11 +90,14 @@ class CrossrefSource(object):
         self._ui.finish_subtask('CrossrefDOI')
         if count > 0 and results:
             for i in range(0, min(10, count)):
+                if 'title' not in results[i] or 'DOI' not in results[i]:
+                    # Bogus data
+                    continue
                 suggested_title = results[i]['title']
                 doi = results[i]['DOI']
 
                 if not isinstance(suggested_title, list):
-                    suggested_title = [ suggested_title ]
+                    suggested_title = [suggested_title]
                 for possibility in suggested_title:
                     fuzz_score = fuzz.partial_ratio(title.lower(),
                                                     possibility.lower())
