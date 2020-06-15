@@ -10,9 +10,6 @@ class ValidISBNChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         isbn = entry.data.get('isbn')
         if not isbn:
             return []
@@ -30,9 +27,6 @@ class ISBNFormatChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         fmt = self._cfg.get('isbn_format', entry)
         if not fmt:
             return []
@@ -73,9 +67,6 @@ class ISBNLengthChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         length = self._cfg.get('isbn_length', entry, 13)
         if not length:
             return []

@@ -8,9 +8,6 @@ class InitialDottedChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         authors = await self.check_one("authors", "Author", entry)
         editors = await self.check_one("editors", "Editor", entry)
         return authors + editors
@@ -48,9 +45,6 @@ class AllcapsNameChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         authors = await self.check_one("authors", "Author", entry)
         editors = await self.check_one("editors", "Editor", entry)
         return authors + editors
@@ -84,9 +78,6 @@ class FirstNameInitialChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         authors = await self.check_one("authors", "Author", entry)
         editors = await self.check_one("editors", "Editor", entry)
         return authors + editors
@@ -116,9 +107,6 @@ class MiddleNameInitialChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         authors = await self.check_one("authors", "Author", entry)
         editors = await self.check_one("editors", "Editor", entry)
         return authors + editors
@@ -153,9 +141,6 @@ class LastNameInitialChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         authors = await self.check_one("authors", "Author", entry)
         editors = await self.check_one("editors", "Editor", entry)
         return authors + editors

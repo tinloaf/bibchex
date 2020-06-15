@@ -11,9 +11,6 @@ class DOIChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         doi = entry.data.get('doi')
         if not doi:
             suggested_doi = entry.get_doi()
@@ -37,9 +34,6 @@ class DOIURLChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         url = entry.data.get('url')
         problems = []
         if not url:
@@ -59,9 +53,6 @@ class DeadURLChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         url = entry.data.get('url')
         problems = []
         if not url:
@@ -85,9 +76,6 @@ class RequiredFieldsChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         problems = []
 
         required_fields = self._cfg.get('required', entry)
@@ -122,9 +110,6 @@ class ForbiddenFieldsChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, True):
-            return []
-
         problems = []
 
         forbidden_fields = self._cfg.get('forbidden_fields', entry, [])

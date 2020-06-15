@@ -12,8 +12,6 @@ class JournalAbbrevChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
-        if not self._cfg.get('check_{}'.format(type(self).NAME), entry, False):
-            return []
         problems = []
         for field in JournalAbbrevChecker.FIELDS:
             val = entry.data.get(field, '')
