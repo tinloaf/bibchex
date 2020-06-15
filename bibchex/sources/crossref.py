@@ -187,8 +187,8 @@ class CrossrefSource(object):
         btype = TYPE_MAPPING.get(data['type'])
         if not btype:
             self._ui.warn(
-                "Crossref", "Type {} not found in crossref source."
-                .format(data['type']))
+                "Crossref", "Type {} not found in crossref source. (Entry {})"
+                .format(data['type'], entry.get_id()))
         else:
             s.add_field('entrytype', btype)
 

@@ -66,8 +66,12 @@ class MetadataHTMLParser(HTMLParser):
         self._authors.append((first, last))
 
     def handle_date(self, name, content):
-        res = parse_datetime(content)
-        self._metadata.update(res)
+        try:
+            res = parse_datetime(content)
+            self._metadata.update(res)
+        except:
+            self._ui.warn("Meta",
+                          "Failed to parse date '{}'".format(content))
 
     def handle_other(self, name, content):
         if name not in self._metadata:
@@ -130,7 +134,7 @@ class MetaSource(object):
     def __init__(self, ui):
         self._ui = ui
         self._cfg = Config()
-        self._ratelimit = AsyncRateLimiter(100, 60)
+        self._ratelimit = AsyncRateLimiter(5, 10)
 
     async def query(self, entry):
         problem = None
@@ -199,7 +203,11 @@ class MetaSource(object):
                         "Accessing URL {} returns status {}"
                         .format(url, status))
 
-                html = await resp.text()
+                try:
+                    html = await resp.text()
+                except UnicodeDecodeError as e:
+                    raise RetrievalProblem(
+                        "Content at URL {} could not be interpreted".format(url))
 
                 parser = MetadataHTMLParser(self._ui, str(resp.url))
                 parser.feed(html)

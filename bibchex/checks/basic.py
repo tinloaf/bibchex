@@ -58,13 +58,18 @@ class DeadURLChecker(object):
         if not url:
             return []
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                status = resp.status
-                if status >= 400 or status < 200:
-                    problems.append((type(self).NAME, "URL seems inaccessible",
-                                     "Accessing URL '{}' gives status code {}"
-                                     .format(url, status)))
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as resp:
+                    status = resp.status
+                    if status >= 400 or status < 200:
+                        problems.append((type(self).NAME, "URL seems inaccessible",
+                                         "Accessing URL '{}' gives status code {}"
+                                         .format(url, status)))
+
+        except aiohttp.client_exceptions.ClientConnectorError as e:
+            problems.append((type(self).NAME, "Could not connect to host",
+                             f"Could not connect to the host for URL {url}."))
 
         return problems
 
