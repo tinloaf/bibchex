@@ -196,7 +196,7 @@ class CrossrefSource(object):
             data = crossref_commons.retrieval.get_publication_as_json(doi)
         except ValueError as e:
             self._ui.finish_subtask('CrossrefQuery')
-            if str(e) == "DOI {doi} does not exist":
+            if str(e) == f"DOI {doi} does not exist":
                 # This isn't really an error, CrossRef just does not know
                 # about them
                 pass

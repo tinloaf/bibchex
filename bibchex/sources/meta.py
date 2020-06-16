@@ -250,62 +250,74 @@ class MetaSource(object):
         # Okay, we're actually going to make a HTTP request
         await self._ratelimit.get()
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=MetaSource.HEADERS) as resp:
-                status = resp.status
-                if status == 403:
-                    try:
-                        html = await resp.text()
-                        if self._detect_captcha(html):
-                            self._ui.finish_subtask('MetaQuery')
-                            self._ui.message("Meta",
-                                             (f"URL {url} requires a captcha to be solved."
-                                              " Giving up."))
-                            raise RetrievalProblem(
-                                f"URL {url} requires a captcha to be solved."
-                            )
-                    except:
-                        pass
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url,
+                                       headers=MetaSource.HEADERS) as resp:
+                    status = resp.status
+                    if status == 403:
+                        try:
+                            html = await resp.text()
+                            if self._detect_captcha(html):
+                                self._ui.finish_subtask('MetaQuery')
+                                self._ui.message(
+                                    "Meta",
+                                    (f"URL {url} requires a captcha to "
+                                     "be solved. Giving up."))
+                                raise RetrievalProblem(
+                                    (f"URL {url} requires a "
+                                     "captcha to be solved.")
+                                )
+                        except:
+                            pass
 
-                    if retry_number == self._max_retries:
+                        if retry_number == self._max_retries:
+                            self._ui.finish_subtask('MetaQuery')
+                            raise RetrievalProblem(
+                                (f"URL {url} still results in 403 "
+                                 f"after {self._max_retries} retries."
+                                 " Giving up."))
+                        self._ui.debug("Meta",
+                                       (f"Got a 403 while accessing {url}."
+                                        f" Backing off. "
+                                        f"Retry {retry_number+1}..."))
+                        await self._ratelimit.backoff()
+                        await asyncio.sleep(self._retry_pause)
+                        return await self._execute_query(entry, url,
+                                                         retry_number+1)
+
+                    if status != 200:
                         self._ui.finish_subtask('MetaQuery')
                         raise RetrievalProblem(
-                            (f"URL {url} still results in 403 "
-                             f"after {self._max_retries} retries. Giving up."))
-                    self._ui.debug("Meta", (f"Got a 403 while accessing {url}."
-                                            f" Backing off. "
-                                            f"Retry {retry_number+1}..."))
-                    await self._ratelimit.backoff()
-                    await asyncio.sleep(self._retry_pause)
-                    return await self._execute_query(entry, url,
-                                                     retry_number+1)
+                            "Accessing URL {} returns status {}"
+                            .format(url, status))
 
-                if status != 200:
+                    try:
+                        html = await resp.text()
+                    except UnicodeDecodeError:
+                        self._ui.finish_subtask('MetaQuery')
+                        raise RetrievalProblem(
+                            f"Content at URL {url} could not be interpreted")
+
+                    parser = MetadataHTMLParser(self._ui, str(resp.url))
+                    parser.feed(html)
+
+                    sugg = Suggestion("meta", entry)
+
+                    for (k, v) in parser.get_metadata().items():
+                        sugg.add_field(k, v)
+
+                    for (first, last) in parser.get_authors():
+                        sugg.add_author(first, last)
+
                     self._ui.finish_subtask('MetaQuery')
-                    raise RetrievalProblem(
-                        "Accessing URL {} returns status {}"
-                        .format(url, status))
-
-                try:
-                    html = await resp.text()
-                except UnicodeDecodeError:
-                    self._ui.finish_subtask('MetaQuery')
-                    raise RetrievalProblem(
-                        "Content at URL {} could not be interpreted".format(url))
-
-                parser = MetadataHTMLParser(self._ui, str(resp.url))
-                parser.feed(html)
-
-                sugg = Suggestion("meta", entry)
-
-                for (k, v) in parser.get_metadata().items():
-                    sugg.add_field(k, v)
-
-                for (first, last) in parser.get_authors():
-                    sugg.add_author(first, last)
-
-                self._ui.finish_subtask('MetaQuery')
-                return sugg
+                    return sugg
+        except asyncio.TimeoutError:
+            self._ui.finish_subtask('MetaQuery')
+            self._ui.error("Meta",
+                           f"Timeout trying to retrieve URL {url}")
+            raise RetrievalProblem(
+                f"Timeout trying to retrieve URL {url}")
 
     async def _execute_doi_query(self, entry, url, retry_number=0):
         m = MetaSource.DOI_RE.match(url)
@@ -315,48 +327,58 @@ class MetaSource(object):
         # Okay, we're actually going to make a HTTP request
         await self._doi_ratelimit.get()
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(api_url) as resp:
-                status = resp.status
-                if status == 403:
-                    if retry_number == self._max_retries:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url) as resp:
+                    status = resp.status
+                    if status == 403:
+                        if retry_number == self._max_retries:
+                            raise RetrievalProblem(
+                                (f"URL {api_url} still results in 403 "
+                                 f"after {self._max_retries} retries."
+                                 " Giving up."))
+                        self._ui.debug(
+                            "Meta",
+                            (f"Got a 403 while accessing {api_url}. "
+                             f" Backing off. Retry {retry_number+1}."))
+                        await self._doi_ratelimit.backoff()
+                        await asyncio.sleep(self._retry_pause)
+                        return await self._execute_doi_query(entry, url,
+                                                             retry_number+1)
+
+                    if status != 200:
+                        self._ui.finish_subtask('MetaQuery')
                         raise RetrievalProblem(
-                            (f"URL {api_url} still results in 403 "
-                             f"after {self._max_retries} retries. Giving up."))
-                    self._ui.debug("Meta",
-                                   (f"Got a 403 while accessing {api_url}. "
-                                    f" Backing off. Retry {retry_number+1}."))
-                    await self._doi_ratelimit.backoff()
-                    await asyncio.sleep(self._retry_pause)
-                    return await self._execute_doi_query(entry, url,
-                                                         retry_number+1)
+                            f"Accessing URL {api_url} returns status {status}")
 
-                if status != 200:
+                    try:
+                        data = await resp.json()
+                    except UnicodeDecodeError:
+                        self._ui.finish_subtask('MetaQuery')
+                        raise RetrievalProblem(
+                            (f"Content at URL {api_url} could not "
+                             "be interpreted as JSON"))
+
+                    target_url = None
+                    for val in data.get('values', []):
+                        if val.get('type') == 'URL':
+                            if val['data']['format'] == 'string':
+                                target_url = val['data']['value']
+                            elif val['data']['format'] == 'base64':
+                                target_url = base64.b64decode(
+                                    val['data']['value'])
+
+                    if target_url:
+                        return await self._execute_query(entry, target_url)
+
                     self._ui.finish_subtask('MetaQuery')
-                    raise RetrievalProblem(
-                        f"Accessing URL {api_url} returns status {status}")
-
-                try:
-                    data = await resp.json()
-                except UnicodeDecodeError:
-                    self._ui.finish_subtask('MetaQuery')
-                    raise RetrievalProblem(
-                        (f"Content at URL {api_url} could not "
-                         "be interpreted as JSON"))
-
-                target_url = None
-                for val in data.get('values', []):
-                    if val.get('type') == 'URL':
-                        if val['data']['format'] == 'string':
-                            target_url = val['data']['value']
-                        elif val['data']['format'] == 'base64':
-                            target_url = base64.b64decode(val['data']['value'])
-
-                if target_url:
-                    return await self._execute_query(entry, target_url)
-
-                self._ui.finish_subtask('MetaQuery')
-                self._ui.warn("Meta",
-                              (f"DOI-URL {api_url} did not resolve to a "
-                               "URL. Giving up."))
-                return None
+                    self._ui.warn("Meta",
+                                  (f"DOI-URL {api_url} did not resolve to a "
+                                   "URL. Giving up."))
+                    return None
+        except asyncio.TimeoutError:
+            self._ui.finish_subtask('MetaQuery')
+            self._ui.error("Meta",
+                           f"Timeout trying to retrieve URL {api_url}")
+            raise RetrievalProblem(
+                f"Timeout trying to retrieve URL {api_url}")
