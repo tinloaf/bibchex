@@ -33,7 +33,7 @@ class GenericFuzzySimilarityChecker(object):
         GenericFuzzySimilarityChecker.SEEN_NAMES[cls.NAME] = set()
 
     @classmethod
-    async def complete(cls):
+    async def complete(cls, ui):
         cfg = Config()
 
         def compute(seen_names, chunk_count, chunk_number):
@@ -50,6 +50,12 @@ class GenericFuzzySimilarityChecker(object):
             return problems
 
         name = cls.NAME
+        item_count = len(GenericFuzzySimilarityChecker.SEEN_NAMES[name])
+        ui.message("FuzzySim", (f"Fuzzy-checking pairwise similarity "
+                                f"of {cls.MSG_NAME}s. Testing "
+                                f"{item_count**2 / 2 - item_count} pairs. "
+                                "This might take a while."))
+
         collected_problems = []
         chunk_count = min(len(os.sched_getaffinity(0)) * 10,
                           len(GenericFuzzySimilarityChecker.SEEN_NAMES[name]))
@@ -92,7 +98,7 @@ class GenericAbbrevChecker(object):
         GenericAbbrevChecker.SEEN_NAMES[cls.NAME] = set()
 
     @classmethod
-    async def complete(cls):
+    async def complete(cls, ui):
         name = cls.NAME
         problems = []
 

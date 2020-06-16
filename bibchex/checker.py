@@ -108,7 +108,7 @@ class Checker(object):
 
         for CChecker in CCHECKERS:
             if hasattr(CChecker, 'complete'):
-                global_results = await CChecker.complete()
+                global_results = await CChecker.complete(self._ui)
                 for (problem_type, message, details) in global_results:
                     self._global_problems.append(
                         Problem(None, CChecker.NAME, problem_type,

@@ -20,7 +20,8 @@ TYPE_MAPPING = {
     'monograph': ['book'],
     'proceedings-article': ['inproceedings', 'article'],
     'dissertation': ['book'],
-    'report': ['article', 'misc']
+    'report': ['article', 'misc'],
+    'reference-entry': ['article', 'inproceedings']
 }
 
 # Left: Field from crossref, Right: Field in Bibtex
