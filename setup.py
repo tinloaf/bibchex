@@ -17,7 +17,7 @@ requires = [
     "python-dateutil>=2.8.1",
     "ratelimit>=2.2.1",
     "python-Levenshtein>=0.12.0"
-    ]
+]
 
 test_requires = [
     "pytest>=5.4.3",
@@ -33,8 +33,9 @@ setup(
 
     setup_requires=["pytest-runner>=5.2"],
     install_requires=requires,
-    tests_require = requires + test_requires,
-    
+    tests_require=requires + test_requires,
+    python_requires='>=3.6',
+
     author="Lukas Barth",
     author_email="pypi@mbox.tinloaf.de",
     description="Check your BibTeX files for consistency and sanity.",
