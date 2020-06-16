@@ -52,7 +52,8 @@ class CrossrefSource(object):
         if self._cfg.get('crossref_plus'):
             self._ui.message("Crossref", "Setting Crossref Plus token")
             os.environ['CR_API_PLUS'] = self._cfg.get('crossref_plus')
-        if self._cfg.get('crossref_mailto'):
+        if (self._cfg.get('crossref_mailto') and
+                len(self._cfg.get('crossref_mailto')) > 0):
             # TODO make version dynamic
             os.environ['CR_API_AGENT'] = \
                 ('BibChex/0.1 '
@@ -60,6 +61,14 @@ class CrossrefSource(object):
                      self._cfg.get('crossref_mailto'))
             os.environ['CR_API_MAILTO'] = self._cfg.get('crossref_mailto')
         else:
+            self._ui.warn("CrossRef",
+                          ("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                           "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                           " Please set crossref_mailto in your config! \n"
+                           " Not setting crossref_mailto may cause all your CrossRef"
+                           " requests to fail."
+                           "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                           "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"))
             os.environ['CR_API_AGENT'] = \
                 'BibChex/0.1 (https://github.com/tinloaf/bibchex)'
 

@@ -9,7 +9,9 @@
 		"journal_no_abbrevs": true,
 
 		"crossref_plus": "",
-		"crossref_mailto": "put_some_valid_email_address_here@example.com",
+
+		"COMMENT-1": "Please set 'crossref_mailto' to an email address that you actually monitor. CrossRef uses this data to contact you in case any problems arise. If you do not set this value, CrossRef may ban you for automated requests.",
+		"crossref_mailto": "",
 
 		"wanted": ["title", "author", "editor", "journal", "publisher", "organization", "year", "booktitle", "volume", "number", "issue", "isbn", "issn"],
 
