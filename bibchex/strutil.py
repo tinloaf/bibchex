@@ -102,3 +102,23 @@ def flexistrip(s):
         return s.strip()
     else:
         return [st.strip for st in s]
+
+
+def tokenize_braces(s):
+    next_bracegroup_re = re.compile(
+        (r'^(?P<unbraced>.*?(?<!\\)(?:\\\\)*){(?P<braced>.*?)(?<!\\)(?:\\\\)*}'
+         r'(?P<remainder>.*)'))
+
+    remaining = s
+    tokens = []
+    while len(remaining) > 0:
+        m = next_bracegroup_re.match(remaining)
+        if not m:
+            tokens.append((False, remaining))
+            break
+        else:
+            tokens.append((False, m.groupdict()['unbraced']))
+            tokens.append((True, m.groupdict()['braced']))
+            remaining = m.groupdict()['remainder']
+
+    return tokens

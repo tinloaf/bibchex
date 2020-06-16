@@ -1,5 +1,6 @@
-from bibchex.strutil import split_at_multiple
+from bibchex.strutil import split_at_multiple, tokenize_braces
 from bibchex.config import Config
+
 
 class HasTitleChecker(object):
     NAME = "has_title"
@@ -16,19 +17,23 @@ class HasTitleChecker(object):
                  "Missing title", ""))
 
         return problems
-    
+
 
 class TitleCapitalizationChecker(object):
     NAME = 'title_capitalization'
 
     def __init__(self):
         self._cfg = Config()
-        
+
     async def check(self, entry):
         title = entry.raw_data.get('title', "")
-        words = list(filter(lambda s: len(s) > 0,
-                            split_at_multiple(title, [" ", "-"])))
 
+        tokens = tokenize_braces(title)
+        unbraced_part = "".join(
+            (part for (braced, part) in tokens if not braced))
+
+        words = list(filter(lambda s: len(s) > 0,
+                            split_at_multiple(unbraced_part, [" ", "-"])))
         problems = []
 
         for word in words:

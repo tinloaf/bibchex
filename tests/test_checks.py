@@ -22,6 +22,7 @@ class TestTitleChecks:
         assert ('boringTitle', 'title_capitalization') not in problem_set
         assert ('bracedTitle', 'title_capitalization') not in problem_set
         assert ('fancyTitle', 'title_capitalization') in problem_set
+        assert ('buggyTitle', 'title_capitalization') not in problem_set
 
     def test_has_title(self, datadir, event_loop):
         f = datadir['problem_title.bib']
