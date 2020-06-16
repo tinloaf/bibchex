@@ -28,7 +28,7 @@ test_requires = [
 
 setup(
     name="bibchex",
-    version="0.1.4",
+    version="0.1.5",
     packages=find_packages(),
 
     setup_requires=["pytest-runner>=5.2"],
