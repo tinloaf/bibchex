@@ -85,8 +85,15 @@ class CrossrefSource(object):
                 else:
                     q.append(('author', "{} {}".format(first, last)))
 
-        (count, results) = crossref_commons.search.search_publication(
-            q, sort="relevance", order="desc")
+        try:
+            (count, results) = crossref_commons.search.search_publication(
+                q, sort="relevance", order="desc")
+        except Exception as e:
+            self._ui.error("CrossRef",
+                           (f"Error reverse-searching for {entry.get_id()}: "
+                            f"{e}"))
+            self._ui.finish_subtask('CrossrefDOI')
+            return None
 
         self._ui.finish_subtask('CrossrefDOI')
         if count > 0 and results:
@@ -178,8 +185,16 @@ class CrossrefSource(object):
 
         try:
             data = crossref_commons.retrieval.get_publication_as_json(doi)
-        except ValueError:
+        except ValueError as e:
             self._ui.finish_subtask('CrossrefQuery')
+            if str(e) == "DOI {doi} does not exist":
+                # This isn't really an error, CrossRef just does not know
+                # about them
+                pass
+            else:
+                self._ui.error("CrossRef",
+                               (f"Error retrieving data for {entry.get_id()}. "
+                                f"{e}"))
             return None
 
         s = Suggestion("crossref", entry)
