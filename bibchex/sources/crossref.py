@@ -82,7 +82,6 @@ class CrossrefSource(object):
         title = entry.data.get('title')
         if title is None:
             # Without a title, we're chanceless.
-            self._ui.finish_subtask('CrossrefDOI')
             return None
 
         q = [('bibliographic', title)]
@@ -101,10 +100,8 @@ class CrossrefSource(object):
             self._ui.error("CrossRef",
                            (f"Error reverse-searching for {entry.get_id()}: "
                             f"{e}"))
-            self._ui.finish_subtask('CrossrefDOI')
             return None
 
-        self._ui.finish_subtask('CrossrefDOI')
         if count > 0 and results:
             for i in range(0, min(10, count)):
                 if 'title' not in results[i] or 'DOI' not in results[i]:
@@ -156,6 +153,8 @@ class CrossrefSource(object):
 
         except RetrievalProblem as e:
             problem = e
+
+        self._ui.finish_subtask('CrossrefDOI')
 
         return (result, problem)
 
