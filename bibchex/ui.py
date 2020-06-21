@@ -2,6 +2,7 @@ from datetime import datetime
 from threading import Lock
 
 import curses
+import logging
 
 
 def wrapafter(s, length):
@@ -41,6 +42,33 @@ class Subtask(object):
         self._done = 0
 
 
+class UILoggingHandler(logging.StreamHandler):
+    def __init__(self, ui, prefix):
+        super().__init__()
+        self._ui = ui
+        self._prefix = prefix
+
+    def emit(self, record):
+        msg = self.format(record)
+        # Low-Level logging messages are always classified "debug" by us.
+        self._ui.debug(self._prefix, msg)
+
+    @classmethod
+    def setup_ui(cls, ui):
+        # Redirect warnings
+        logging.captureWarnings(True)
+        warn_logger = logging.getLogger('py.warnings')
+        warn_handler = UILoggingHandler(ui, 'LOG-WARN')
+        warn_handler.setLevel(logging.INFO)
+        warn_logger.addHandler(warn_handler)
+
+        # Redirect bibtexparser logs
+        btp_logger = logging.getLogger('bibtexparser.bparser')
+        btp_handler = UILoggingHandler(ui, 'BTP')
+        btp_handler.setLevel(logging.WARNING)
+        btp_logger.addHandler(btp_handler)
+
+
 class GUI(object):
     L_DEBUG = 1
     L_MESSAGE = 2
@@ -61,6 +89,8 @@ class GUI(object):
         self._win_log_height = None
         self._mutex = Lock()
         self._rebuild_windows = False
+
+        UILoggingHandler.setup_ui(self)
 
         self._init_colors()
         self._build_windows()
@@ -113,7 +143,7 @@ class GUI(object):
             if line > max_line:
                 return
             while remaining:
-                (line_msg, remaining) = wrapafter(msg, msg_line_length)
+                (line_msg, remaining) = wrapafter(remaining, msg_line_length)
                 self._win_log.addstr(
                     line, 3 + len(time_str), line_msg,
                     curses.color_pair(level))
@@ -218,7 +248,7 @@ class GUI(object):
 
 class CLI(object):
     def __init__(self):
-        pass
+        UILoggingHandler.setup_ui(self)
 
     def debug(self, name, message):
         print("[D] {} --- {}".format(name, message))
@@ -250,7 +280,7 @@ class CLI(object):
 
 class SilentUI(object):
     def __init__(self):
-        pass
+        UILoggingHandler.setup_ui(self)
 
     def debug(self, name, message):
         pass
