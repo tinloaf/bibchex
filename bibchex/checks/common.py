@@ -53,7 +53,7 @@ class GenericFuzzySimilarityChecker(object):
         item_count = len(GenericFuzzySimilarityChecker.SEEN_NAMES[name])
         ui.message("FuzzySim", (f"Fuzzy-checking pairwise similarity "
                                 f"of {cls.MSG_NAME}s. Testing "
-                                f"{item_count**2 / 2 - item_count} pairs. "
+                                f"{item_count*(item_count - 1) / 2 - item_count} pairs. "
                                 "This might take a while."))
 
         collected_problems = []
