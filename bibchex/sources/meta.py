@@ -173,8 +173,8 @@ class MetaSource(object):
         self._cfg = Config()
         # dx.doi.org (sometimes) has very harsh rate limits. This seems to be
         # some cloudflare magic
-        self._ratelimit = AsyncRateLimiter(10, 10)
-        self._doi_ratelimit = AsyncRateLimiter(10, 10)
+        self._ratelimit = AsyncRateLimiter(50, 10)
+        self._doi_ratelimit = AsyncRateLimiter(20, 10)
         self._max_retries = 5
         self._retry_pause = 10  # Wait an additional 10 seconds before a retry
 
