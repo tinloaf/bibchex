@@ -1,5 +1,6 @@
 import os
 import asyncio
+import re
 
 from fuzzywuzzy import fuzz
 
@@ -10,6 +11,7 @@ from bibchex.util import chunked_pairs
 
 class GenericFuzzySimilarityChecker(object):
     SEEN_NAMES = {}
+    NUMBER_RE = re.compile(r'\d+\S*')
 
     def __init__(self):
         self._cfg = Config()
@@ -19,30 +21,37 @@ class GenericFuzzySimilarityChecker(object):
         if self._name not in GenericFuzzySimilarityChecker.SEEN_NAMES:
             GenericFuzzySimilarityChecker.SEEN_NAMES[self._name] = set()
 
+    def _normalize_name(self, name):
+        name = GenericFuzzySimilarityChecker.NUMBER_RE.sub('', name)
+        return name.strip()
+
     async def check(self, entry):
         for field in self._cls.FIELDS:
             val = entry.data.get(field)
             if not val:
                 continue
-            GenericFuzzySimilarityChecker.SEEN_NAMES[self._name].add(val)
+            GenericFuzzySimilarityChecker.SEEN_NAMES[self._name]\
+                                         .add((val, self._normalize_name(val)))
 
         return []
 
-    @classmethod
+    @ classmethod
     async def reset(cls):
         GenericFuzzySimilarityChecker.SEEN_NAMES[cls.NAME] = set()
 
-    @classmethod
+    @ classmethod
     async def complete(cls, ui):
         cfg = Config()
 
         def compute(seen_names, chunk_count, chunk_number):
             problems = []
-            for (n1, n2) in chunked_pairs(list(seen_names), chunk_count, chunk_number):
-                if (n1 == n2):
+            # nn1/nn2 are the normalized forms of the names
+            for ((n1, nn1), (n2, nn2)) in chunked_pairs(
+                    list(seen_names), chunk_count, chunk_number):
+                if (nn1 == nn2):
                     continue
 
-                if fuzz.partial_ratio(n1, n2) > 95:  # TODO make configurable
+                if fuzz.partial_ratio(nn1, nn2) > 90:  # TODO make configurable
                     problems.append((name,
                                      "{} names '{}' and '{}' seem very similar."
                                      .format(cls.MSG_NAME, n1, n2),
@@ -93,11 +102,11 @@ class GenericAbbrevChecker(object):
 
         return []
 
-    @classmethod
+    @ classmethod
     async def reset(cls):
         GenericAbbrevChecker.SEEN_NAMES[cls.NAME] = set()
 
-    @classmethod
+    @ classmethod
     async def complete(cls, ui):
         name = cls.NAME
         problems = []
