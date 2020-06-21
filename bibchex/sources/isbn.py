@@ -62,14 +62,17 @@ class ISBNSource(object):
         try:
             bibtex_data = self._formatter(meta(isbn, service=provider))
         except ISBNLibException as e:
+            self._ui.finish_subtask('ISBNQuery')
             return (None, e)
 
         try:
             parsed_data = bibtexparser.loads(bibtex_data)
         except:
+            self._ui.finish_subtask('ISBNQuery')
             raise RetrievalProblem("Data from ISBN source could not be parsed")
 
         if len(parsed_data.entries) != 1:
+            self._ui.finish_subtask('ISBNQuery')
             raise RetrievalProblem(
                 "ISBN search did not return exactly one result.")
 

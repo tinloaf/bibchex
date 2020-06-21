@@ -198,6 +198,7 @@ class MetaSource(object):
                     url = self._handle_relative_url(e.url, e.base_url)
 
         except aiohttp.ClientError as e:
+            self._ui.finish_subtask('MetaQuery')
             self._ui.error("meta", "Connection problem: {}".format(e))
             problem = e
         except RetrievalProblem as e:
