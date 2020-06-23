@@ -144,6 +144,43 @@ Journal Similarity Checker
 
 Checks whether two journals (fields `booktitle` and `journal`) have very similar names and might actually mean the same journal in two different forms.
 
+Booktitle Format Checker
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Name**: `booktitle_format`
+
+Checks whether the `booktitle` format corresponds to a configurable format. The format can be given as a regular expression or a list of regular expressions. If one of the regular expressions matches the content of the `booktitle` filed, no error is generated.
+
+In the regular expression, `{year}` will be replaced with the year of the publication (if available, otherwise the empty string), and `{short_year}` will be replaced with the last two digits of the year.
+
+For example, this regular expression:
+
+    'Proceedings of the \d+(th|st|rd|nd) .* \([a-z]*[A-Z]+[a-z]*’{short_year}\)"
+
+Would match a `booktitle` such as
+
+    'Proceedings of the 42nd Conference on Something (COS’20)'
+
+(assuming that the publication appeared in the year 2020)
+
+**Options**
+
+booktitle_format
+  The regular expression or list of regular expressions to check against
+
+Journal Format Checker
+^^^^^^^^^^^^^^^^^^^^^^
+
+**Name**: `journal_format`
+
+Same as the booktitle format checker, only for the `journal` field - see above.
+
+**Options**
+
+journal_format
+  The regular expression or list of regular expressions to check against
+
+	
 Publisher Similarity Check
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -154,6 +191,7 @@ Checks whether two publishers (fields `organization` and `publisher`) have very 
 
 Journal Mutual Abbreviation Checker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 **Name**: `journal_mutual_abbrev`
 

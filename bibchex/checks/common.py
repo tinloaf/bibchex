@@ -9,6 +9,44 @@ from bibchex.strutil import AbbrevFinder
 from bibchex.util import chunked_pairs
 
 
+class GenericStringFormatChecker(object):
+    PROVIDE_FIELDS = ['year', 'date']
+
+    def __init__(self):
+        self._cfg = Config()
+        self._name = type(self).NAME
+        self._field = type(self).FIELD
+        self._cls = type(self)
+
+    async def check(self, entry):
+        problems = []
+        formats = self._cfg.get(self._cls.FORMAT_FIELD, entry)
+        field_data = entry.data.get(self._field)
+
+        if formats is None or field_data is None:
+            return []
+
+        entry_data = {field: str(entry.data.get(field, ''))
+                      for field in
+                      GenericStringFormatChecker.PROVIDE_FIELDS}
+
+        # special 'short year'
+        entry_data['short_year'] = entry_data['year'][-2:]
+
+        if not isinstance(formats, list):
+            formats = [formats]
+
+        for form in formats:
+            re_str = form.format(**entry_data)
+            m = re.match(re_str, field_data)
+            if m:
+                # Everything A-Okay
+                return []
+
+        return [(self._name,
+                 f"Format for field {self._field} incorrect.", "")]
+
+
 class GenericFuzzySimilarityChecker(object):
     SEEN_NAMES = {}
     NUMBER_RE = re.compile(r'\d+\S*')

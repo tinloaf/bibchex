@@ -40,7 +40,7 @@ class TitleCapitalizationChecker(object):
             upper_count = sum((int(c.isupper()) for c in word))
             if upper_count > 1:
                 if word[0] != '{' or word[-1] != '}':
-                    problems.append(('unbraced_acronym',
+                    problems.append(('title_capitalization',
                                      "Capitalization of '{}' in the title is \
                                      lost".format(word),
                                      ("The word '{}' in the title contains "

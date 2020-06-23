@@ -38,6 +38,22 @@ class TestTitleChecks:
 
 
 class TestPublicationChecks:
+    def test_booktitle_format(self, datadir, event_loop):
+        f = datadir['problem_publication.bib']
+
+        set_config({'check_booktitle_format': True,
+                    'booktitle_format':
+                    (r'Proceedings of the \d+(th|st|rd|nd) .*'
+                     r" \([a-z]*[A-Z]+[a-z]*’{short_year}\)")})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('wrongBooktitle', 'booktitle_format') in problem_set
+        assert ('wrongYear', 'booktitle_format') in problem_set
+        assert ('goodBooktitle', 'booktitle_format') not in problem_set
+
     def test_journal_abbrev(self, datadir, event_loop):
         f = datadir['problem_publication.bib']
 

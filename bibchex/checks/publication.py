@@ -1,7 +1,7 @@
 from bibchex.config import Config
 from bibchex.util import parse_datetime, contains_abbreviation
 from bibchex.checks.common import GenericFuzzySimilarityChecker,\
-    GenericAbbrevChecker
+    GenericAbbrevChecker, GenericStringFormatChecker
 
 
 class JournalAbbrevChecker(object):
@@ -22,6 +22,18 @@ class JournalAbbrevChecker(object):
                      .format(val), ""))
 
         return problems
+
+
+class BooktitleFormatChecker(GenericStringFormatChecker):
+    NAME = 'booktitle_format'
+    FIELD = 'booktitle'
+    FORMAT_FIELD = 'booktitle_format'
+
+
+class JournalFormatChecker(GenericStringFormatChecker):
+    NAME = 'journal_format'
+    FIELD = 'journal'
+    FORMAT_FIELD = 'journal_format'
 
 
 class JournalSimilarityChecker(GenericFuzzySimilarityChecker):
