@@ -201,9 +201,10 @@ def is_abbreviation(s):
     return False
 
 
-def contains_abbreviation(s):
+def contains_abbreviation(s, acceptable=set()):
     words = split_at_multiple(s, ' \t\n')
-    return any((is_abbreviation(w) for w in words))
+    return any(((is_abbreviation(w) and
+                 w not in acceptable) for w in words))
 
 
 def chunked_pairs(items, chunk_count, chunk_number):

@@ -13,11 +13,12 @@ class JournalAbbrevChecker(object):
 
     async def check(self, entry):
         problems = []
+        acceptable = set(self._cfg.get("acceptable_abbreviations", entry, []))
         for field in JournalAbbrevChecker.FIELDS:
             val = entry.data.get(field, '')
-            if contains_abbreviation(val):
+            if contains_abbreviation(val, acceptable=acceptable):
                 problems.append(
-                    ("abbreviated_journal",
+                    (type(self).NAME,
                      "Publication title '{}' seems to contain an abbreviation"
                      .format(val), ""))
 
