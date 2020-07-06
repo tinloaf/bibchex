@@ -16,6 +16,12 @@ from bibchex.data import Suggestion
 
 LOGGER = logging.getLogger(__name__)
 
+TAG_RE = re.compile(r'<.*?>')
+
+
+def remove_tags(text):
+    return TAG_RE.sub('', text)
+
 
 class RedirectException(Exception):
     def __init__(self, url, base_url):
@@ -306,7 +312,11 @@ class MetaSource(object):
                     sugg = Suggestion("meta", entry)
 
                     for (k, v) in parser.get_metadata().items():
-                        sugg.add_field(k, v)
+                        if isinstance(v, list):
+                            sugg.add_field(k,
+                                           [remove_tags(vi) for vi in v])
+                        else:
+                            sugg.add_field(k, remove_tags(v))
 
                     for (first, last) in parser.get_authors():
                         sugg.add_author(first, last)

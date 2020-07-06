@@ -101,7 +101,7 @@ def flexistrip(s):
     if isinstance(s, str):
         return s.strip()
     else:
-        return [st.strip for st in s]
+        return [st.strip() for st in s]
 
 
 def tokenize_braces(s):

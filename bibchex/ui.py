@@ -34,6 +34,7 @@ def wrapafter(s, length):
 
     return (this_line, remaining)
 
+
 class ModulePrefixFilter(logging.Filter):
     def __init__(self, prefix, invert=False):
         self._prefix = prefix
@@ -42,6 +43,7 @@ class ModulePrefixFilter(logging.Filter):
     def filter(self, record):
         if record.name[:len(self._prefix)] == self._prefix:
             return not self._invert
+
 
 class Subtask(object):
     def __init__(self, name, total):
@@ -83,7 +85,6 @@ class UILoggingHandler(logging.StreamHandler):
         elif level == 'CRITICAL':
             self._ui.error(source, msg)
 
-
     @classmethod
     def setup_ui(cls, ui):
         # Redirect warnings
@@ -91,7 +92,7 @@ class UILoggingHandler(logging.StreamHandler):
 
         # Formatter for all messages
         formatter = logging.Formatter('%(message)s')
-        
+
         # Handle everything that's not coming from us
         general_handler = UILoggingHandler(ui)
         general_handler.setLevel(logging.INFO)
@@ -103,7 +104,8 @@ class UILoggingHandler(logging.StreamHandler):
         bibchex_handler.setLevel(logging.DEBUG)
         bibchex_handler.setFormatter(formatter)
         bibchex_handler.addFilter(ModulePrefixFilter('bibchex.', invert=False))
-        logging.basicConfig(level=logging.DEBUG, handlers=[general_handler, bibchex_handler])
+        logging.basicConfig(level=logging.DEBUG, handlers=[
+                            general_handler, bibchex_handler])
 
         # # Redirect warnings
         # logging.captureWarnings(True)

@@ -170,7 +170,8 @@ class Differ(object):
                                 hit = True
                         else:
                             # Plain
-                            hit &= (entry_data == d)
+                            print(f"Comparing '{entry_data}' to '{d}'")
+                            hit |= (entry_data == d)
 
                     if not hit:
                         diffs.append(Difference(
@@ -188,6 +189,7 @@ class Differ(object):
             if field not in self._entry.data and field in suggestion.data:
                 diffs.append(Difference(self._entry.get_id(),
                                         suggestion.source, field,
-                                        suggestion.data[field]))
+                                        [d for (d, kind)
+                                         in suggestion.data[field]]))
 
         return diffs
