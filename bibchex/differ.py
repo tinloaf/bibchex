@@ -170,7 +170,6 @@ class Differ(object):
                                 hit = True
                         else:
                             # Plain
-                            print(f"Comparing '{entry_data}' to '{d}'")
                             hit |= (entry_data == d)
 
                     if not hit:
