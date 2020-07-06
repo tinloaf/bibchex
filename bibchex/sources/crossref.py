@@ -65,13 +65,13 @@ class CrossrefSource(object):
                      self._cfg.get('crossref_mailto'))
             os.environ['CR_API_MAILTO'] = self._cfg.get('crossref_mailto')
         else:
-            LOGGER.warn(("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-                         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-                         " Please set crossref_mailto in your config! \n"
-                         " Not setting crossref_mailto may cause all your CrossRef"
-                         " requests to fail."
-                         "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-                         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"))
+            LOGGER.warning(("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                            " Please set crossref_mailto in your config! \n"
+                            " Not setting crossref_mailto may cause all your CrossRef"
+                            " requests to fail."
+                            "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"))
             os.environ['CR_API_AGENT'] = \
                 'BibChex/0.1 (https://github.com/tinloaf/bibchex)'
 
