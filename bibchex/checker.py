@@ -1,6 +1,7 @@
 import concurrent
 import sys
 import asyncio
+import logging
 
 import bibtexparser
 
@@ -11,7 +12,9 @@ from bibchex.ui import UI
 from bibchex.checks import CCHECKERS
 from bibchex.output import HTMLOutput
 from bibchex.config import Config
+from bibchex.unify import Unifier
 
+LOGGER = logging.getLogger(__name__)
 
 class Checker(object):
     def __init__(self, filename, out_filename):
@@ -27,28 +30,32 @@ class Checker(object):
         self._problems = []
         self._global_problems = []
 
+        self._unifier = Unifier()
+
         self._ui = UI()
         self._cfg = Config()
 
     async def run(self):
-        self._ui.message("Main", "Parsing Bibtex")
+        LOGGER.info("Parsing BibTeX")
         self._parse()
-        self._ui.message("Main", "Retrieving missing DOIs")
+        LOGGER.info("Applying unification rules")
+        self._unify()
+        LOGGER.info("Retrieving missing DOIs")
         await self._find_dois()
-        self._ui.message("Main", "Retrieving metadata")
+        LOGGER.info("Retrieving metadata")
         await self._retrieve()
-        self._ui.message("Main", "Calculating differences")
+        LOGGER.info("Calculating differences")
         self._diff()
-        self._ui.message("Main", "Running consistency checks")
+        LOGGER.info("Running consistency checks")
         await self._check_consistency()
         # TODO Retrieval Errors should be part of the HTML output
 
         self._filter_diffs()
         self._filter_problems()
 
-        self._ui.message("Main", "Writing output")
+        LOGGER.info("Writing output")
         self._output()
-        self._ui.message("Main", "Done.")
+        LOGGER.info("Done.")
 
     def _filter_diffs(self):
         filtered_diffs = [diff for diff in self._diffs
@@ -71,12 +78,12 @@ class Checker(object):
         html_out.write(self._out_filename)
 
     def _print_retrieval_errors(self):
-        self._ui.warn("main", "############################################")
-        self._ui.warn("main", "##    Errors occurred during retrieval    ##")
-        self._ui.warn("main", "############################################")
+        LOGGER.warn("############################################")
+        LOGGER.warn("##    Errors occurred during retrieval    ##")
+        LOGGER.warn("############################################")
 
         for p in self._retrieval_errors:
-            self._ui.warn("main", " - {}".format(p))
+            LOGGER.warn("main", " - {}".format(p))
 
     def _diff(self):
         for (_, entry) in self._entries.items():
@@ -90,7 +97,7 @@ class Checker(object):
         for CChecker in CCHECKERS:
             if hasattr(CChecker, 'reset'):
                 await CChecker.reset()
-                
+
         for CChecker in CCHECKERS:
             for entry in self._entries.values():
                 ccheck = CChecker()
@@ -162,16 +169,22 @@ class Checker(object):
 
             for (result, retrieval_error) in raw_result:
                 if result:
-                    if entry.get_id() not in self._suggestions:
-                        self._suggestions[entry.get_id()] = [result]
-                    else:
-                        self._suggestions[entry.get_id()].append(result)
+                    # Unify all suggested data
+                    self._unifier.unify_suggestion(result)
+                    self._suggestions[entry.get_id()].append(result)
                 if retrieval_error:
                     if isinstance(retrieval_error, list):
                         self._retrieval_errors.extend(retrieval_error)
                     else:
                         self._retrieval_errors.append(retrieval_error)
 
+    def _unify(self):
+        for entry in self._entries.values():
+            assert entry.get_id() not in self._suggestions
+            self._suggestions[entry.get_id()] = [
+                self._unifier.unify_entry(entry)
+            ]
+                        
     def _parse(self):
         with open(self._fname) as bibtex_file:
             parser = bibtexparser.bparser.BibTexParser(
@@ -184,7 +197,7 @@ class Checker(object):
                       for bentry in self._bibtex_data.entries]
         entry_keys = set((entry.get_id() for entry in entry_list))
         if len(entry_keys) != len(entry_list):
-            self._ui.error("main", "ERROR! Duplicate keys detected!")
+            LOGGER.error("ERROR! Duplicate keys detected!")
             sys.exit(-1)
 
         self._entries = {entry.get_id(): entry for entry in entry_list}

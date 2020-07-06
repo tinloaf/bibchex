@@ -206,6 +206,9 @@ class Entry(object):
 
 
 class Suggestion(object):
+    KIND_PLAIN = 1
+    KIND_RE = 2
+
     def __init__(self, source, entry):
         self._entry = entry
         self.data = {}
@@ -213,8 +216,18 @@ class Suggestion(object):
         self.authors = []
         self.editors = []
 
-    def add_field(self, k, vs):
-        self.data[k] = vs
+    def get_entry(self):
+        return self._entry
+
+    def add_field(self, k, vs, kind=KIND_PLAIN):
+        if k not in self.data:
+            self.data[k] = []
+
+
+        if isinstance(vs, list):
+            self.data[k].extend([(str(v), kind) for v in vs])
+        else:
+            self.data[k].append((str(vs), kind))
 
     def add_author(self, first, last):
         self.authors.append((first, last))

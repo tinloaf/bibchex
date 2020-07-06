@@ -155,7 +155,7 @@ In the regular expression, `{year}` will be replaced with the year of the public
 
 For example, this regular expression:
 
-    'Proceedings of the \d+(th|st|rd|nd) .* \([a-z]*[A-Z]+[a-z]*’{short_year}\)"
+    'Proceedings of the \d+(th|st|rd|nd) .* \([a-z]*[A-Z]+[a-z]*’{short_year}\)'
 
 Would match a `booktitle` such as
 

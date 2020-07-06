@@ -1,8 +1,10 @@
+import re
+
 from isbnlib import canonical, to_isbn13
 
 from bibchex.util import unlatexify, unify_hyphens
 from bibchex.strutil import lower_case_first_letters, crush_spaces, is_allcaps
-from bibchex.data import Difference
+from bibchex.data import Difference, Suggestion
 from bibchex.config import Config
 
 
@@ -15,7 +17,7 @@ def isbn_differ(entry_data, suggestion_data):
     if not entry_isbn:
         return True
 
-    suggestion_isbns = [to_isbn13(canonical(s)) for s in suggestion_data]
+    suggestion_isbns = [to_isbn13(canonical(s)) for (s, _) in suggestion_data]
 
     return entry_isbn not in suggestion_isbns
 
@@ -121,47 +123,61 @@ class Differ(object):
         # the data in the suggestion
         for field in self._entry.data.keys():
             if field in suggestion.data:
-                if isinstance(suggestion.data[field], list):
-                    suggestion_data = suggestion.data[field]
-                else:
-                    suggestion_data = [suggestion.data[field]]
+                suggestion_data = suggestion.data[field]
 
                 entry_data = unlatexify(self._entry.data[field])
 
                 # Cast everything to string
-                suggestion_data = [str(d) for d in suggestion_data]
+                suggestion_data = [(str(d), kind) for (d, kind)
+                                   in suggestion_data]
 
                 # Unify hyphens
                 entry_data = unify_hyphens(entry_data)
-                suggestion_data = [unify_hyphens(d) for d in suggestion_data]
+                suggestion_data = [(unify_hyphens(d), kind)
+                                   for (d, kind) in suggestion_data]
 
                 # Crush spaces
                 entry_data = crush_spaces(entry_data)
-                suggestion_data = [crush_spaces(d) for d in suggestion_data]
+                suggestion_data = [(crush_spaces(d), kind)
+                                   for (d, kind) in suggestion_data]
 
                 field_props = Differ.FIELD_PROPERTIES.get(field, {})
 
                 if not field_props.get('case', True):
                     entry_data = entry_data.lower()
-                    suggestion_data = [d.lower() for d in suggestion_data]
+                    suggestion_data = [(d.lower(), kind)
+                                       for (d, kind) in suggestion_data]
 
                 if not field_props.get('first_letter_case', True):
                     entry_data = lower_case_first_letters(entry_data)
-                    suggestion_data = [lower_case_first_letters(
-                        d) for d in suggestion_data]
+                    suggestion_data = [
+                        (lower_case_first_letters(d), kind)
+                        for (d, kind) in suggestion_data]
 
                 if 'diff_func' in field_props:
+                    # Diff func must handle plain / re on itself!
                     if field_props['diff_func'](entry_data, suggestion_data):
                         diffs.append(Difference(
                             self._entry.get_id(),
                             suggestion.source,
-                            field, suggestion.data[field]))
+                            field,
+                            [d for (d, kind) in suggestion.data[field]]))
                 else:
-                    if entry_data not in suggestion_data:
+                    hit = False
+                    for (d, kind) in suggestion_data:
+                        if kind == Suggestion.KIND_RE:
+                            if re.match(d, entry_data):
+                                hit = True
+                        else:
+                            # Plain
+                            hit &= (entry_data == d)
+
+                    if not hit:
                         diffs.append(Difference(
                             self._entry.get_id(),
                             suggestion.source,
-                            field, suggestion.data[field]))
+                            field,
+                            [d for (d, kind) in suggestion.data[field]]))
 
         # Find fields in the 'wanted' option for which the suggestion has data,
         # but the entry has not.
