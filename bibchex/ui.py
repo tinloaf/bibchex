@@ -34,6 +34,14 @@ def wrapafter(s, length):
 
     return (this_line, remaining)
 
+class ModulePrefixFilter(logging.Filter):
+    def __init__(self, prefix, invert=False):
+        self._prefix = prefix
+        self._invert = invert
+
+    def filter(self, record):
+        if record.name[:len(self._prefix)] == self._prefix:
+            return not self._invert
 
 class Subtask(object):
     def __init__(self, name, total):
@@ -43,30 +51,73 @@ class Subtask(object):
 
 
 class UILoggingHandler(logging.StreamHandler):
-    def __init__(self, ui, prefix):
+    def __init__(self, ui, prefix=None, force_level=None, ignore_from=set()):
         super().__init__()
         self._ui = ui
         self._prefix = prefix
+        self._force_level = force_level
+        self._ignore_from = ignore_from
 
     def emit(self, record):
+        if record.name in self._ignore_from:
+            return
+
         msg = self.format(record)
         # Low-Level logging messages are always classified "debug" by us.
-        self._ui.debug(self._prefix, msg)
+        level = record.levelname
+        if self._force_level:
+            level = self._force_level
+
+        source = self._prefix
+        if not source:
+            source = record.name
+
+        if level == 'DEBUG':
+            self._ui.debug(source, msg)
+        elif level == 'INFO':
+            self._ui.message(source, msg)
+        elif level == 'WARNING':
+            self._ui.warn(source, msg)
+        elif level == 'ERROR':
+            self._ui.error(source, msg)
+        elif level == 'CRITICAL':
+            self._ui.error(source, msg)
+
 
     @classmethod
     def setup_ui(cls, ui):
         # Redirect warnings
         logging.captureWarnings(True)
-        warn_logger = logging.getLogger('py.warnings')
-        warn_handler = UILoggingHandler(ui, 'LOG-WARN')
-        warn_handler.setLevel(logging.INFO)
-        warn_logger.addHandler(warn_handler)
 
-        # Redirect bibtexparser logs
-        btp_logger = logging.getLogger('bibtexparser.bparser')
-        btp_handler = UILoggingHandler(ui, 'BTP')
-        btp_handler.setLevel(logging.WARNING)
-        btp_logger.addHandler(btp_handler)
+        # Formatter for all messages
+        formatter = logging.Formatter('%(message)s')
+        
+        # Handle everything that's not coming from us
+        general_handler = UILoggingHandler(ui)
+        general_handler.setLevel(logging.INFO)
+        general_handler.setFormatter(formatter)
+        general_handler.addFilter(ModulePrefixFilter('bibchex.', invert=True))
+
+        # Handle everything that is coming from us
+        bibchex_handler = UILoggingHandler(ui)
+        bibchex_handler.setLevel(logging.DEBUG)
+        bibchex_handler.setFormatter(formatter)
+        bibchex_handler.addFilter(ModulePrefixFilter('bibchex.', invert=False))
+        logging.basicConfig(level=logging.DEBUG, handlers=[general_handler, bibchex_handler])
+
+        # # Redirect warnings
+        # logging.captureWarnings(True)
+        # warn_logger = logging.getLogger('py.warnings')
+        # warn_handler = UILoggingHandler(
+        #     ui, prefix='LOG-WARN', force_level='DEBUG')
+        # warn_handler.setLevel(logging.INFO)
+        # warn_logger.addHandler(warn_handler)
+
+        # # Redirect bibtexparser logs
+        # btp_logger = logging.getLogger('bibtexparser.bparser')
+        # btp_handler = UILoggingHandler(ui, prefix='BTP', force_level='DEBUG')
+        # btp_handler.setLevel(logging.WARNING)
+        # btp_logger.addHandler(btp_handler)
 
 
 class GUI(object):
@@ -317,15 +368,15 @@ class UI(object):
         if not UI.instance:
             UI.instance = GUI()
 
-    @classmethod
+    @ classmethod
     def select_gui(self):
         UI.instance = GUI()
 
-    @classmethod
+    @ classmethod
     def select_cli(self):
         UI.instance = CLI()
 
-    @classmethod
+    @ classmethod
     def select_silent(self):
         UI.instance = SilentUI()
 

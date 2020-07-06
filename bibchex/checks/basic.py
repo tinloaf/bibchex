@@ -1,8 +1,10 @@
 import aiohttp
 import re
+import logging
 
 from bibchex.config import Config
 
+LOGGER = logging.getLogger(__name__)
 
 class DOIChecker(object):
     NAME = "doi"
@@ -67,7 +69,14 @@ class DeadURLChecker(object):
                                          "Accessing URL '{}' gives status code {}"
                                          .format(url, status)))
 
-        except aiohttp.client_exceptions.ClientConnectorError as e:
+        except aiohttp.client_exceptions.ClientConnectorError:
+            problems.append((type(self).NAME, "Could not connect to host",
+                             f"Could not connect to the host for URL {url}."))
+
+        except AssertionError:
+            # For some reasons, aiohttp sometimes fails with an assertion instead of a
+            # ClientConnectError.
+            LOGGER.warn(f"Connecting to {url} triggers assertion")
             problems.append((type(self).NAME, "Could not connect to host",
                              f"Could not connect to the host for URL {url}."))
 

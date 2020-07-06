@@ -3,6 +3,7 @@ from html.parser import HTMLParser
 from urllib.parse import urlparse, urlunparse
 import asyncio
 import base64
+import logging
 
 import aiohttp
 from nameparser import HumanName
@@ -12,6 +13,8 @@ from bibchex.asyncrate import AsyncRateLimiter
 from bibchex.util import parse_datetime
 from bibchex.problems import RetrievalProblem
 from bibchex.data import Suggestion
+
+LOGGER = logging.getLogger(__name__)
 
 
 class RedirectException(Exception):
@@ -73,8 +76,7 @@ class MetadataHTMLParser(HTMLParser):
             res = parse_datetime(content)
             self._metadata.update(res)
         except:
-            self._ui.warn("Meta",
-                          "Failed to parse date '{}'".format(content))
+            LOGGER.warn("Failed to parse date '{}'".format(content))
 
     def handle_other(self, name, content):
         if name not in self._metadata:
@@ -199,10 +201,10 @@ class MetaSource(object):
 
         except aiohttp.ClientError as e:
             self._ui.finish_subtask('MetaQuery')
-            self._ui.error("meta", "Connection problem: {}".format(e))
+            LOGGER.error("Connection problem: {}".format(e))
             problem = e
         except RetrievalProblem as e:
-            self._ui.error("meta", "Retrieval problem: {}".format(e))
+            LOGGER.error("Retrieval problem: {}".format(e))
             problem = e
 
         return (result, problem)
@@ -261,8 +263,7 @@ class MetaSource(object):
                             html = await resp.text()
                             if self._detect_captcha(html):
                                 self._ui.finish_subtask('MetaQuery')
-                                self._ui.message(
-                                    "Meta",
+                                LOGGER.info(
                                     (f"URL {url} requires a captcha to "
                                      "be solved. Giving up."))
                                 raise RetrievalProblem(
@@ -278,10 +279,9 @@ class MetaSource(object):
                                 (f"URL {url} still results in 403 "
                                  f"after {self._max_retries} retries."
                                  " Giving up."))
-                        self._ui.debug("Meta",
-                                       (f"Got a 403 while accessing {url}."
-                                        f" Backing off. "
-                                        f"Retry {retry_number+1}..."))
+                        LOGGER.debug((f"Got a 403 while accessing {url}."
+                                      f" Backing off. "
+                                      f"Retry {retry_number+1}..."))
                         await self._ratelimit.backoff()
                         await asyncio.sleep(self._retry_pause)
                         return await self._execute_query(entry, url,
@@ -315,8 +315,7 @@ class MetaSource(object):
                     return sugg
         except asyncio.TimeoutError:
             self._ui.finish_subtask('MetaQuery')
-            self._ui.error("Meta",
-                           f"Timeout trying to retrieve URL {url}")
+            LOGGER.error(f"Timeout trying to retrieve URL {url}")
             raise RetrievalProblem(
                 f"Timeout trying to retrieve URL {url}")
 
@@ -338,8 +337,7 @@ class MetaSource(object):
                                 (f"URL {api_url} still results in 403 "
                                  f"after {self._max_retries} retries."
                                  " Giving up."))
-                        self._ui.debug(
-                            "Meta",
+                        LOGGER.debug(
                             (f"Got a 403 while accessing {api_url}. "
                              f" Backing off. Retry {retry_number+1}."))
                         await self._doi_ratelimit.backoff()
@@ -373,13 +371,12 @@ class MetaSource(object):
                         return await self._execute_query(entry, target_url)
 
                     self._ui.finish_subtask('MetaQuery')
-                    self._ui.warn("Meta",
-                                  (f"DOI-URL {api_url} did not resolve to a "
-                                   "URL. Giving up."))
+                    LOGGER.warn(
+                        (f"DOI-URL {api_url} did not resolve to a "
+                         "URL. Giving up."))
                     return None
         except asyncio.TimeoutError:
             self._ui.finish_subtask('MetaQuery')
-            self._ui.error("Meta",
-                           f"Timeout trying to retrieve URL {api_url}")
+            LOGGER.error(f"Timeout trying to retrieve URL {api_url}")
             raise RetrievalProblem(
                 f"Timeout trying to retrieve URL {api_url}")

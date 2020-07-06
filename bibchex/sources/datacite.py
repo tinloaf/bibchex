@@ -2,11 +2,13 @@ import asyncio
 import urllib
 import requests
 from functools import partial
+import logging
 
 from bibchex.data import Suggestion
 from bibchex.problems import RetrievalProblem
 from bibchex.asyncrate import SyncRateLimiter
 
+LOGGER = logging.getLogger(__name__)
 
 def path_exists(d, path):
     for element in path:
@@ -34,10 +36,10 @@ class DataCiteSource(object):
             result = await loop.run_in_executor(
                 None, partial(self._query_blocking, entry))
         except requests.exceptions.RequestException as e:
-            self._ui.error("datacite", "Connection problem: {}".format(e))
+            LOGGER.error("Connection problem: {}".format(e))
             problem = e
         except RetrievalProblem as e:
-            self._ui.error("datacite", "Retrieval problem: {}".format(e))
+            LOGGER.error("Retrieval problem: {}".format(e))
             problem = e
 
         return (result, problem)
@@ -63,7 +65,7 @@ class DataCiteSource(object):
         try:
             data = response.json()
         except ValueError:
-            self._ui.warn("DataCite", "Response did not contain JSON")
+            LOGGER.warn("Response did not contain JSON")
             self._ui.finish_subtask('DataCiteQuery')
             return None
 

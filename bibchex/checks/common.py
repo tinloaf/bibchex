@@ -1,12 +1,15 @@
 import os
 import asyncio
 import re
+import logging
 
 from fuzzywuzzy import fuzz
 
 from bibchex.config import Config
 from bibchex.strutil import AbbrevFinder
 from bibchex.util import chunked_pairs
+
+LOGGER = logging.getLogger(__name__)
 
 
 class GenericStringFormatChecker(object):
@@ -98,10 +101,10 @@ class GenericFuzzySimilarityChecker(object):
 
         name = cls.NAME
         item_count = len(GenericFuzzySimilarityChecker.SEEN_NAMES[name])
-        ui.message("FuzzySim", (f"Fuzzy-checking pairwise similarity "
-                                f"of {cls.MSG_NAME}s. Testing "
-                                f"{item_count*(item_count - 1) / 2 - item_count} pairs. "
-                                "This might take a while."))
+        LOGGER.info((f"Fuzzy-checking pairwise similarity "
+                     f"of {cls.MSG_NAME}s. Testing "
+                     f"{item_count*(item_count - 1) / 2 - item_count} pairs. "
+                     "This might take a while."))
 
         collected_problems = []
         chunk_count = min(len(os.sched_getaffinity(0)) * 10,

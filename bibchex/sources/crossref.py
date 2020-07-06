@@ -2,6 +2,7 @@ import re
 import asyncio
 import os
 from functools import partial
+import logging
 
 import crossref_commons.retrieval
 import crossref_commons.search
@@ -13,6 +14,8 @@ from bibchex.problems import RetrievalProblem
 from bibchex.config import Config
 from bibchex.strutil import flexistrip
 
+LOGGER = logging.getLogger('__name__')
+
 TYPE_MAPPING = {
     'journal-article': ['article'],
     'book-chapter': ['inproceedings', 'inbook', 'incollection'],
@@ -21,7 +24,8 @@ TYPE_MAPPING = {
     'proceedings-article': ['inproceedings', 'article'],
     'dissertation': ['book'],
     'report': ['article', 'misc'],
-    'reference-entry': ['article', 'inproceedings']
+    'reference-entry': ['article', 'inproceedings'],
+    'reference-book': ['book', 'article', 'inbook']
 }
 
 # Left: Field from crossref, Right: Field in Bibtex
@@ -50,7 +54,7 @@ class CrossrefSource(object):
         # Check if we have crossref credentials and set them via environment
         # variable. The environment variables are read by crossref_commons
         if self._cfg.get('crossref_plus'):
-            self._ui.message("Crossref", "Setting Crossref Plus token")
+            LOGGER.info("Setting Crossref Plus token")
             os.environ['CR_API_PLUS'] = self._cfg.get('crossref_plus')
         if (self._cfg.get('crossref_mailto') and
                 len(self._cfg.get('crossref_mailto')) > 0):
@@ -61,14 +65,13 @@ class CrossrefSource(object):
                      self._cfg.get('crossref_mailto'))
             os.environ['CR_API_MAILTO'] = self._cfg.get('crossref_mailto')
         else:
-            self._ui.warn("CrossRef",
-                          ("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-                           "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-                           " Please set crossref_mailto in your config! \n"
-                           " Not setting crossref_mailto may cause all your CrossRef"
-                           " requests to fail."
-                           "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-                           "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"))
+            LOGGER.warn(("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                         " Please set crossref_mailto in your config! \n"
+                         " Not setting crossref_mailto may cause all your CrossRef"
+                         " requests to fail."
+                         "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+                         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"))
             os.environ['CR_API_AGENT'] = \
                 'BibChex/0.1 (https://github.com/tinloaf/bibchex)'
 
@@ -97,9 +100,8 @@ class CrossrefSource(object):
             (count, results) = crossref_commons.search.search_publication(
                 q, sort="relevance", order="desc")
         except Exception as e:
-            self._ui.error("CrossRef",
-                           (f"Error reverse-searching for {entry.get_id()}: "
-                            f"{e}"))
+            LOGGER.error((f"Error reverse-searching for {entry.get_id()}: "
+                          f"{e}"))
             return None
 
         if count > 0 and results:
@@ -200,9 +202,8 @@ class CrossrefSource(object):
                 # about them
                 pass
             else:
-                self._ui.error("CrossRef",
-                               (f"Error retrieving data for {entry.get_id()}. "
-                                f"{e}"))
+                LOGGER.error((f"Error retrieving data for {entry.get_id()}. "
+                              f"{e}"))
             return None
 
         s = Suggestion("crossref", entry)
@@ -210,8 +211,8 @@ class CrossrefSource(object):
         # Special handling for type
         btype = TYPE_MAPPING.get(data['type'])
         if not btype:
-            self._ui.warn(
-                "Crossref", "Type {} not found in crossref source. (Entry {})"
+            LOGGER.warn(
+                "Type {} not found in crossref source. (Entry {})"
                 .format(data['type'], entry.get_id()))
         else:
             s.add_field('entrytype', btype)

@@ -1,5 +1,6 @@
 import asyncio
 from functools import partial
+import socket
 
 import bibtexparser
 
@@ -64,6 +65,10 @@ class ISBNSource(object):
         except ISBNLibException as e:
             self._ui.finish_subtask('ISBNQuery')
             return (None, e)
+        except socket.timeout:
+            self._ui.finish_subtask('ISBNQuery')
+            raise RetrievalProblem("Socket timeout during"
+                                   " ISBN metadata retrieval")
 
         try:
             parsed_data = bibtexparser.loads(bibtex_data)
