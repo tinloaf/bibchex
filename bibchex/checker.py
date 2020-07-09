@@ -205,6 +205,8 @@ class Checker(object):
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(20))
+    # TODO this is a very large number of threads. Maybe check instead how many
+    # are currently sleeping, and scale up only if too many are sleeping?
+    loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(1000))
     c = Checker(sys.argv[1], sys.argv[2])
     loop.run_until_complete(c.run())
