@@ -205,6 +205,12 @@ class CrossrefSource(object):
                 LOGGER.error((f"Error retrieving data for {entry.get_id()}. "
                               f"{e}"))
             return None
+        except ConnectionError as e:
+            # TODO retry?
+            self._ui.finish_subtask('CrossrefQuery')
+            LOGGER.error((f"Connection error retrieving data for {entry.get_id()}. "
+                          f"{e}"))
+            return None
 
         s = Suggestion("crossref", entry)
 
