@@ -1,4 +1,5 @@
 import re
+import logging
 
 from isbnlib import canonical, to_isbn13
 
@@ -6,6 +7,8 @@ from bibchex.util import unlatexify, unify_hyphens
 from bibchex.strutil import lower_case_first_letters, crush_spaces, is_allcaps
 from bibchex.data import Difference, Suggestion
 from bibchex.config import Config
+
+LOGGER = logging.getLogger('__name__')
 
 
 def is_initial(s):
@@ -26,7 +29,8 @@ class Differ(object):
     FIELD_PROPERTIES = {
         'doi': {'case': False},
         'title': {'first_letter_case': False},
-        'isbn': {'diff_func': isbn_differ}
+        'isbn': {'diff_func': isbn_differ},
+        'issn': {'list': True, 'ignore_order': True}
     }
 
     def __init__(self, entry):
@@ -162,7 +166,7 @@ class Differ(object):
                             suggestion.source,
                             field,
                             [d for (d, kind) in suggestion.data[field]]))
-                else:
+                elif not field_props.get('list', False):
                     hit = False
                     for (d, kind) in suggestion_data:
                         if kind == Suggestion.KIND_RE:
@@ -171,6 +175,30 @@ class Differ(object):
                         else:
                             # Plain
                             hit |= (entry_data == d)
+
+                    if not hit:
+                        diffs.append(Difference(
+                            self._entry.get_id(),
+                            suggestion.source,
+                            field,
+                            [d for (d, kind) in suggestion.data[field]]))
+                else:
+                    # List comparison
+                    entry_list = [e.strip() for e in entry_data.split(',')]
+                    hit = False
+
+                    for (d, kind) in suggestion_data:
+                        if kind == Suggestion.KIND_RE:
+                            LOGGER.error(
+                                "List-of-regex is not supported as suggestion.")
+                            continue
+
+                        sugg_list = [e.strip() for e in d.split(',')]
+
+                        if field_props.get('ignore_order', False):
+                            hit |= (set(entry_list) == set(sugg_list))
+                        else:
+                            hit |= entry_list == sugg_list
 
                     if not hit:
                         diffs.append(Difference(

@@ -60,31 +60,42 @@ class MetadataHTMLParser(HTMLParser):
         self._url = url
 
         self._metadata = {}
-        self._authors = []
+        self._authors = {}
 
     def get_metadata(self):
         return self._metadata
 
     def get_authors(self):
-        return self._authors
+        # TODO what to do if different field types report inconsistent
+        # lists of authors? For now, we return the longest list of authors
 
-    def handle_author(self, name, content):
+        max_list = []
+        for (field, authorlist) in self._authors.items():
+            if len(authorlist) > len(max_list):
+                max_list = authorlist
+
+        return max_list
+
+    def _handle_author(self, name, content, orig_field):
         n = HumanName(content)
         first = " ".join((n.first, n.middle))
         last = " ".join((n.title, n.last))
         if n.suffix:
             last += ", {}".format(n.suffix)
 
-        self._authors.append((first, last))
+        if orig_field not in self._authors:
+            self._authors[orig_field] = []
 
-    def handle_date(self, name, content):
+        self._authors[orig_field].append((first, last))
+
+    def _handle_date(self, name, content, orig_field):
         try:
             res = parse_datetime(content)
             self._metadata.update(res)
         except:
             LOGGER.warn("Failed to parse date '{}'".format(content))
 
-    def handle_other(self, name, content):
+    def _handle_other(self, name, content, orig_field):
         if name not in self._metadata:
             self._metadata[name] = [content]
         else:
@@ -130,10 +141,10 @@ class MetadataHTMLParser(HTMLParser):
             if isinstance(MetadataHTMLParser.MAPPING[name], str):
                 mapped_name = MetadataHTMLParser.MAPPING[name]
                 if mapped_name in MetadataHTMLParser.SPECIAL:
-                    getattr(self, 'handle_{}'.format(mapped_name))(
-                        mapped_name, content)
+                    getattr(self, '_handle_{}'.format(mapped_name))(
+                        mapped_name, content, name)
                 else:
-                    self.handle_other(mapped_name, content)
+                    self._handle_other(mapped_name, content, name)
             else:
                 mapping_data = MetadataHTMLParser.MAPPING[name]
                 mapped_name = mapping_data['field']
@@ -152,10 +163,10 @@ class MetadataHTMLParser(HTMLParser):
 
                 if not skip:
                     if mapped_name in MetadataHTMLParser.SPECIAL:
-                        getattr(self, 'handle_{}'.format(mapped_name))(
-                            mapped_name, content)
+                        getattr(self, '_handle_{}'.format(mapped_name))(
+                            mapped_name, content, name)
                     else:
-                        self.handle_other(mapped_name, content)
+                        self._handle_other(mapped_name, content, name)
 
     def handle_endtag(self, tag):
         pass

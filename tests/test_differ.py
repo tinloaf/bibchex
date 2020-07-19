@@ -4,12 +4,13 @@ from testutils import make_entry, parse_to_entries
 from bibchex.data import Suggestion
 from bibchex.differ import Differ
 
+
 class TestDiffer:
     def test_re_suggestion(self, datadir):
         e = make_entry({'title': 'This is some title.',
                         'booktitle':
                         "Proceedings of the 20th Conference on Something Awesome (CSA'20)"})
-        
+
         s = Suggestion('test', e)
         s.add_field('title', 'This is some title.', kind=Suggestion.KIND_RE)
         s.add_field('booktitle',
@@ -26,3 +27,15 @@ class TestDiffer:
                     kind=Suggestion.KIND_RE)
         result = d.diff(s)
         assert len(result) == 1
+
+    def test_list_ignore_order(self, datadir):
+        e = make_entry({'title': 'This is some title.',
+                        'issn': '1234-5678, 2345-67890'})
+
+        s = Suggestion('test', e)
+        s.add_field('title', 'This is some title.')
+        s.add_field('issn', '2345-67890, 1234-5678')
+
+        d = Differ(e)
+        result = d.diff(s)
+        assert result == []

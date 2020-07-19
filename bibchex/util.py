@@ -93,7 +93,7 @@ LATEX_ACCENTS = [
     [u"’", "'"],
     [u"“", "``"],
     [u"”", "''"],
-    [u"‚", ","],
+    #    [u"‚", ","], # Why would the comma be replaced by a quotation?
     [u"„", ",,"],
 ]
 
@@ -105,7 +105,7 @@ ACCENT_LOOKUP = {tex: plain for (plain, tex) in LATEX_ACCENTS}
 # TODO fix this
 # NOTE: Don't do this before unbrace()ing.
 # Afterwards, \{ and { cannot be distinguished anymore.
-def tranlate_accents(s):
+def translate_accents(s):
     for tex, plain in ACCENT_LOOKUP.items():
         s = s.replace(tex, plain)
 
@@ -150,7 +150,7 @@ def unbrace(s):
 
 
 def unlatexify(s):
-    return tranlate_accents(unbrace(s))
+    return translate_accents(unbrace(s))
 
 
 def unify_hyphens(s):
