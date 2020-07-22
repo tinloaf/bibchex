@@ -322,11 +322,30 @@ class TestBasicChecks:
         assert ('noTitle', 'required_fields') in problem_set
         assert ('complete', 'required_fields') not in problem_set
 
+    def test_required_in_sub(self, mhttp, datadir, event_loop):
+        f = datadir['problem_basic.bib']
+
+        set_config({'check_required_fields': True,
+                    'required': ['title'],
+                    'sub': [
+                        {"select_field": "entrytype",
+                         "select_re": "article",
+                         "required": ['title', 'publisher']
+                         }
+                    ]})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('noAuthors', 'required_fields') in problem_set
+        assert ('noEditors', 'required_fields') not in problem_set
+
     def test_forbidden(self, mhttp, datadir, event_loop):
         f = datadir['problem_basic.bib']
 
         set_config({'check_forbidden_fields': True,
-                    'forbidden_fields': ['author', 'editor', 'title']})
+                    'forbidden': ['author', 'editor', 'title']})
 
         (problems, global_problems) = run_to_checks(f, event_loop)
         problem_set = set((problem.entry_id, problem.source)
@@ -337,6 +356,25 @@ class TestBasicChecks:
         assert ('noTitle', 'forbidden_fields') in problem_set
         assert ('complete', 'forbidden_fields') in problem_set
         assert ('almostEmpty', 'forbidden_fields') not in problem_set
+
+
+    def test_forbidden_in_sub(self, mhttp, datadir, event_loop):
+        f = datadir['problem_basic.bib']
+
+        set_config({'check_forbidden_fields': True,
+                    'forbidden': ['journal'],
+                    'sub': [
+                        {"select_field": "entrytype",
+                         "select_re": "inproceedings",
+                         "forbidden": ['isbn', 'journal', 'issn']
+                         }
+                    ]})
+
+        (problems, global_problems) = run_to_checks(f, event_loop)
+        problem_set = set((problem.entry_id, problem.source)
+                          for problem in problems)
+
+        assert ('subreq', 'forbidden_fields') in problem_set
 
 
 class TestAuthorChecks:

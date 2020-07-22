@@ -6,6 +6,7 @@ from bibchex.config import Config
 
 LOGGER = logging.getLogger(__name__)
 
+
 class DOIChecker(object):
     NAME = "doi"
 
@@ -126,7 +127,7 @@ class ForbiddenFieldsChecker(object):
     async def check(self, entry):
         problems = []
 
-        forbidden_fields = self._cfg.get('forbidden_fields', entry, [])
+        forbidden_fields = self._cfg.get('forbidden', entry, [])
         for field_raw in forbidden_fields:
             field = field_raw.lower()
 
