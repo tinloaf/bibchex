@@ -14,6 +14,10 @@ class DOIChecker(object):
         self._cfg = Config()
 
     async def check(self, entry):
+        nodoi = entry.options.get('nodoi', False)
+        if nodoi:
+            return []
+
         doi = entry.data.get('doi')
         if not doi:
             suggested_doi = entry.get_doi()

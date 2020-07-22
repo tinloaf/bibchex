@@ -274,6 +274,7 @@ class TestBasicChecks:
         assert ('noDOI', 'doi') in problem_set
         assert ('DOIfromURL', 'doi') in problem_set
         assert ('withDOI', 'doi') not in problem_set
+        assert ('dontcheckDOI', 'doi') not in problem_set
 
         for problem in problems:
             if problem.entry_id == 'DOIfromURL' and \
